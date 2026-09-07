@@ -180,3 +180,58 @@ docs/chrono-archive-theme-report.md    本报告
 - 卸载：`cordis_stop('chroa-1')`（恢复默认）或 `cordis_undefine('chroa-1')`（移除）。
 - 重新构建：动态插件无需构建；改镜像文件后以相同代码 `cordis_define` 追加新
   Package 再 `cordis_run`（update）。持久化打包方案见 README「重新构建/持久化」。
+
+## 14. Light Contrast Fix（v1.5.0，语义层修复，非 opacity / 非 hash hack）
+
+### 1. 根因
+- `schemeTokens()` 曾把 inverse/contrast 语义配错：
+  `button-contrast-fill = p.canvas` + `label-primary-inverted = p.canvas`
+  （浅色下等于“浅字贴浅底”，反色控件默认不可读）。
+- `RAIL_GOLD` 只把 Sidebar 子树内 `label-primary` 换成浅金，却没有同步把
+  New Session 等原生控件实际使用的 surface 层（`button-elevated-fill`、
+  `bg-layer-*` 等）切黑金 → 出现“浅金字 + 浅卡片”，hover 时才随
+  `floating-hover` 显形。已对照运行副本源码核实
+  （New Session：`background:var(--dsw-alias-button-elevated-fill)` +
+  `color:var(--dsw-alias-label-primary)`）。
+
+### 2. 修改的 token（语义成对，未逐组件加颜色）
+- 新增反色对常量：`ARCH_INK=#251C0F`、`ARCH_PAPER=#F6EED9`。
+  - LIGHT：`button-contrast-fill=深档案棕`、`label-primary-inverted=暖纸白`
+  - DARK：两者互换（浅纸面 + 深墨字）
+- `label-primary-foreground`（主按钮专用）保持独立，未与 inverted 混淆。
+- RAIL_GOLD 在单一 Sidebar Scope root 内重定义完整一层
+  （railBg/Surface/Elevated/Floating/Hover/Active/Ink2/Ink3/Border/Gold +
+  全部 `bg-*`、`button-*`、`interactive-*`、`label-*`、`specific-*`、
+  toast/tooltip、chrono-*），文字与 surface 始终成对。
+
+### 3–5. Bright / Parchment / Rail Gold 结果（离线 WCAG 计算）
+| 组合 | Ratio |
+| --- | --- |
+| Bright light label-primary/bg-base | 11.07 |
+| Bright light New Session(rail) label/elevated | 10.29 |
+| Parchment light label-primary/bg-base | 9.75 |
+| Parchment light New Session(rail) label/elevated | 10.29 |
+| Bright dark New Session(rail) label/elevated | 11.7 |
+| label-primary-inverted/contrast-fill（light/dark 同构） | 14.5 |
+| label-primary-foreground/primary-fill light（金底白字） | 3.8–4.0（≥3 交互文字 AA） |
+
+### 6–8. New Session 与状态
+- New Session 默认：rail 浅金字 `#F3EAD5` × elevated `#2E3542`（≈10.3:1）；
+  hover 仅改 surface（暗金微亮），不承担恢复文字职责；focus 沿用原生金描边。
+- 未发现仍需“hover/click 后才可读”的控件。
+
+### 9. 诊断工具
+- client 内置 `[Chrono Contrast]` 日志（console.log / console.warn <3/<4.5），
+  覆盖 label-primary/bg-base、label-primary/bg-layer-1、inverted/contrast-fill、
+  primary-foreground/primary-fill 等；不改运行时逻辑。
+
+### 10. 验收
+- [x] Bright / Parchment 默认卡片文字清晰（token 配对 + 比值 ≥9.7）
+- [x] New Session 默认可读、不依赖 hover/click
+- [x] contrast-fill ↔ inverted-label 成对
+- [x] light / dark 均通过（暗侧正文 ≥12、侧栏 ≥10）
+- [x] hover/focus 只改 surface/border，不承担文字可读性
+- [x] 无新增 hash CSS；未改 DSH core/node_modules/profile
+- [ ] 浏览器 computed-style 目测（需你在页面确认 Bright/Parchment × light/dark 各一遍；
+      主按钮 3.8–4.0 为交互文字 AA，若想更高可再压暗金色一档）
+
