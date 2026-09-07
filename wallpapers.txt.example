@@ -10,7 +10,7 @@
 #       @contrast 1.02     对比度倍率
 #       @size cover        尺寸：cover | contain
 #       @cycle 300         轮换间隔（秒），0 = 单张不轮换
-#       @solidity 0.8      界面底色不透明度（0.5 更透 → 1.0 更实）
+#       @solidity 0.66     界面底色不透明度（0.45 更透 → 1.0 更实）
 #   3) 其余行 = 壁纸路径（把图片放进本目录 art/），可选 ` :: 定位` 覆盖定位
 # 动态插件 Host 的 fs 只能读其工作区；外部盘符路径会被跳过。
 @pos center 38%
@@ -20,7 +20,8 @@
 @contrast 1.02
 @size cover
 @cycle 300
-@solidity 0.8
+@solidity 0.66
 
-art/your-wallpaper-1.png :: center 40%
-art/your-wallpaper-2.png :: right center
+art/68ab1f39-2103-498d-bbc1-6e9f330cadfa.png
+art/fdf72779-734b-4b6b-8fbc-6a1695d0bb0b.png :: center 42%
+art/25742565-0b74-48a2-8414-ad52ecff72e5.png :: center 45%
