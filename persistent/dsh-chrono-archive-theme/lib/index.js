@@ -1,4 +1,6 @@
 // Chrono Archive · persistent host half (web profile bundle)
+// v2: waits for webServer/fs via ctx.inject before registering routes,
+//     fixing silent no-mount when this row starts before services exist.
 const CHRONO_DIR = 'F:\\dsh试验工作区\\chrono-archive';
 const OVERRIDE_FILE = CHRONO_DIR + '\\art\\user.wall.txt';
 
@@ -68,17 +70,11 @@ function sendJson(res, code, obj) {
   res.setHeader('Content-Length', String(Buffer.byteLength(body)));
   res.end(body);
 }
-export async function apply(ctx) {
+function registerWith(ctx, webServer, fs) {
   const disposers = [];
-  ctx.effect(() => () => { for (const d of disposers) { try { d(); } catch (_) {} } }, 'chrono-archive: host cleanup');
-  const fs = ctx.get('fs');
-  const webServer = ctx.get('webServer');
-  if (fs === undefined || webServer === undefined) return;
-
+  ctx.effect(() => () => { for (const d of disposers) { try { d(); } catch (_) {} } }, 'chrono-archive: cleanup');
   const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' };
   let wallFiles = new Map();
-  let cachedConfig = null;
-
   async function loadState() {
     const doc = await readFileText(fs, CHRONO_DIR + '\\wallpapers.txt');
     const parsed = parseWallpaperDoc(doc || '');
@@ -109,7 +105,6 @@ export async function apply(ctx) {
   }
   async function refresh() {
     const st = await loadState();
-    cachedConfig = st;
     wallFiles = new Map();
     for (const w of st.walls) {
       const ext = (w.file.match(/\.([a-zA-Z0-9]+)$/) || [])[1] || 'png';
@@ -124,22 +119,6 @@ export async function apply(ctx) {
     css: st.css,
     wallpapers: st.walls.map((w) => ({ key: w.key, url: '/chrono-assets/' + w.key + '.img', pos: w.pos })),
   });
-
-  // favicon tap
-  const favSvg = await readFileText(fs, CHRONO_DIR + '\\assets\\favicon.svg');
-  if (favSvg) {
-    const dataUrl = 'data:image/svg+xml;base64,' + Buffer.from(favSvg, 'utf8').toString('base64');
-    disposers.push(webServer.tapIndex((html) => {
-      const fav = '<link rel="icon" type="image/svg+xml" href="' + dataUrl + '" data-chrono="1"/>';
-      let h = html;
-      if (h.indexOf('data-chrono="1"') === -1) {
-        if (h.indexOf('rel="icon"') !== -1) h = h.replace(/<link[^>]*rel="icon"[^>]*\/?>/i, fav);
-        else h = h.replace('</head>', fav + '</head>');
-      }
-      return h;
-    }));
-  }
-
   disposers.push(webServer.register({ kind: 'exact', path: '/chrono-config.json', handler: async (req, res) => {
     try { sendJson(res, 200, toView(await refresh())); }
     catch (err) { sendJson(res, 500, { ok: false, error: String(err && err.message || err) }); }
@@ -180,4 +159,27 @@ export async function apply(ctx) {
       res.end(bytes);
     } catch (_) { res.statusCode = 500; res.end('asset error'); }
   } }));
+  readFileText(fs, CHRONO_DIR + '\\assets\\favicon.svg').then((favSvg) => {
+    if (!favSvg) return;
+    try {
+      const dataUrl = 'data:image/svg+xml;base64,' + Buffer.from(favSvg, 'utf8').toString('base64');
+      disposers.push(webServer.tapIndex((html) => {
+        const fav = '<link rel="icon" type="image/svg+xml" href="' + dataUrl + '" data-chrono="1"/>';
+        let h = html;
+        if (h.indexOf('data-chrono="1"') === -1) {
+          if (h.indexOf('rel="icon"') !== -1) h = h.replace(/<link[^>]*rel="icon"[^>]*\/?>/i, fav);
+          else h = h.replace('</head>', fav + '</head>');
+        }
+        return h;
+      }));
+    } catch (_) { }
+  });
+}
+export function apply(ctx) {
+  ctx.inject(['webServer', 'fs'], (ready) => {
+    const webServer = (ready && (ready.webServer || (ready.get && ready.get('webServer')))) || ctx.get('webServer');
+    const fs = (ready && (ready.fs || (ready.get && ready.get('fs')))) || ctx.get('fs');
+    if (!webServer || !fs) return;
+    registerWith(ready && ready.on ? ready : ctx, webServer, fs);
+  });
 }

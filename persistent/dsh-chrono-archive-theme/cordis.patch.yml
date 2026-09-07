@@ -1,5 +1,7 @@
-# dsh-chrono-archive-theme bundle patch
-# Mounts the Chrono Archive skin host half (routes/favicon/config endpoints).
-- insert:
-    - id: chrono-archive
-      name: 'dsh-chrono-archive-theme'
+# dsh-chrono-archive-theme bundle patch (kept intentionally EMPTY)
+#
+# The host half is mounted by the web profile's own cordis.patch.yml row
+# (id: chrono-archive, name: 'dsh-chrono-archive-theme') to avoid duplicate
+# loader ids. The browser client module is auto-discovered from node_modules
+# via the package's `dsh.client` metadata. Nothing to insert here.
+[]
