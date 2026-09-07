@@ -1,6 +1,9 @@
-// Chrono Archive · Client 半区（镜像文件；与 cordis_define code.client 一致）v5
-// - 深色：卡片/基底表面更实更暗（避免亮感贴字）
-// - 设置页：新增「更换本机壁纸」路径输入 + 设为壁纸 / 恢复清单
+// Chrono Archive · Client 半区（镜像文件；与 cordis_define code.client 一致）v6
+// - 修复 inverse/contrast 语义配对（button-contrast-fill ↔ label-primary-inverted）
+// - RAIL_GOLD 覆盖 Sidebar 全 surface 层（New Session 等原生按钮默认即可读）
+// - 内置 WCAG 对比度诊断（开发日志，不改变运行时逻辑）
+const ARCH_PAPER = '#F6EED9';
+const ARCH_INK = '#251C0F';
 const FALLBACK_LIGHT = { canvas: '#F1EBDB', base: '#EBE2CD', raised: '#F7F1E1', overlayBg: '#FDFAF0', ink: '#32291E', inkSoft: '#665B47', inkMuted: '#948871', accent: '#9B7830', accentSoft: '#BE9443', accentPale: '#E7CA7C', wine: '#8A4438', pine: '#52705A', slate: '#526173', link: '#4A5F86', success: '#55785A', warn: '#9A7A2E', danger: '#A3483C', codeBg: '#F5EEDD', codeBanner: '#EEE5CC', codeInline: '#FAF4E6', selection: '#DDC48E' };
 const FALLBACK_DARK = { canvas: '#101319', base: '#161A22', raised: '#1D232D', overlayBg: '#1B212B', ink: '#EAE2CE', inkSoft: '#BCB39D', inkMuted: '#8F8673', accent: '#C9A24B', accentSoft: '#DFBE6E', accentPale: '#EAD08F', wine: '#A05244', pine: '#6E8D72', slate: '#7E93A8', link: '#A9BFE0', success: '#83A987', warn: '#D9AF5E', danger: '#C96B5B', codeBg: '#0F141C', codeBanner: '#171E29', codeInline: '#232B37', selection: '#8A6F2F' };
 const BRIGHT_LIGHT = { canvas: '#F1EBDB', base: '#EBE2CD', raised: '#F7F1E1', overlayBg: '#FDFAF0', ink: '#32291E', inkSoft: '#665B47', inkMuted: '#948871', accent: '#9B7830', accentSoft: '#BE9443', accentPale: '#E7CA7C', wine: '#8A4438', pine: '#52705A', slate: '#526173', link: '#4A5F86', success: '#55785A', warn: '#9A7A2E', danger: '#A3483C', codeBg: '#F5EEDD', codeBanner: '#EEE5CC', codeInline: '#FAF4E6', selection: '#DDC48E' };
@@ -39,12 +42,14 @@ function schemeTokens(p, cfg, dark) {
   const baseAlpha = clamp(s * 0.8, 0.45, 0.96);
   const sidebarAlpha = clamp(s * 0.62, 0.3, 0.92);
   const layer1Alpha = clamp(s * 0.95, 0.6, 1);
-  // 深色：基底/抬升面更实更暗，避免“亮卡片贴浅字”
   const darkBaseAlpha = clamp(0.42 + s * 0.6, 0.82, 0.97);
   const darkLayer1Alpha = clamp(0.8 + s * 0.2, 0.92, 0.98);
   const accentFill = dark ? p.accent : mix(p.accent, '#000000', 0.16);
   const accentHover = dark ? mix(p.accent, '#000000', 0.12) : mix(p.accent, '#000000', 0.3);
   const fgOnAccent = dark ? '#251D0B' : '#FDF6E4';
+  // 反色成对：contrastFill（浅=深墨面；深=浅纸面）↔ invertedText
+  const contrastFill = dark ? ARCH_PAPER : ARCH_INK;
+  const contrastText = dark ? ARCH_INK : ARCH_PAPER;
   const border = (a) => alpha(p.ink, a);
   const t = {};
   const put = (k, v) => { t[k] = v; };
@@ -72,7 +77,7 @@ function schemeTokens(p, cfg, dark) {
   put('--dsw-alias-brand-primary-invert', p.ink);
   put('--dsw-alias-brand-primary-new-colorprimary-new-color', accentFill);
   put('--dsw-alias-brand-text', dark ? p.accentPale : mix(p.accent, p.canvas, 0.42));
-  put('--dsw-alias-button-contrast-fill', p.canvas);
+  put('--dsw-alias-button-contrast-fill', contrastFill);
   put('--dsw-alias-button-elevated-fill', p.raised);
   put('--dsw-alias-button-floating-fill', alpha(p.overlayBg, 0.92));
   put('--dsw-alias-button-floating-hover', mix(p.accent, p.overlayBg, 0.1));
@@ -98,7 +103,7 @@ function schemeTokens(p, cfg, dark) {
   put('--dsw-alias-label-primary-bluish', p.ink);
   put('--dsw-alias-label-primary-dimmed', mix(p.ink, p.base, 0.3));
   put('--dsw-alias-label-primary-foreground', fgOnAccent);
-  put('--dsw-alias-label-primary-inverted', p.canvas);
+  put('--dsw-alias-label-primary-inverted', contrastText);
   put('--dsw-alias-label-secondary', p.inkSoft);
   put('--dsw-alias-label-tertiary', p.inkMuted);
   put('--dsw-alias-markdown-citation', alpha(p.wine, 0.6));
@@ -154,7 +159,55 @@ function pickPalette(scheme, cfg, filesLight, filesDark) {
   const over = scheme === 'dark' ? filesDark || {} : filesLight || {};
   return mergePal(base, over);
 }
-const RAIL_GOLD = '.pI_x6G_sidebarCol{--chrono-side-bg:rgba(13,14,19,.95);--chrono-side-gold:#C9A24B;--chrono-side-gold-bright:#E3C467;--chrono-side-ink:#F3E9D2;--dsw-alias-label-primary:var(--chrono-side-ink);--dsw-alias-label-primary-bluish:var(--chrono-side-ink);--dsw-alias-label-primary-dimmed:color-mix(in srgb,var(--chrono-side-ink) 64%,var(--chrono-side-gold) 36%);--dsw-alias-label-secondary:color-mix(in srgb,var(--chrono-side-ink) 72%,var(--chrono-side-gold) 28%);--dsw-alias-label-tertiary:color-mix(in srgb,var(--chrono-side-ink) 56%,var(--chrono-side-gold) 44%);--dsw-alias-label-caption:color-mix(in srgb,var(--chrono-side-ink) 48%,var(--chrono-side-gold) 52%);--dsw-alias-label-dimmed:color-mix(in srgb,var(--chrono-side-ink) 62%,transparent);--dsw-alias-border-l1:color-mix(in srgb,var(--chrono-side-gold) 18%,transparent);--dsw-alias-border-l2:color-mix(in srgb,var(--chrono-side-gold) 28%,transparent);--dsw-alias-border-l3:color-mix(in srgb,var(--chrono-side-gold) 42%,transparent);--dsw-alias-border-l4:color-mix(in srgb,var(--chrono-side-gold) 58%,transparent);--chrono-ink:var(--chrono-side-ink);--chrono-ink-soft:color-mix(in srgb,var(--chrono-side-ink) 72%,var(--chrono-side-gold) 28%);--chrono-ink-muted:color-mix(in srgb,var(--chrono-side-ink) 52%,var(--chrono-side-gold) 48%);--chrono-accent:var(--chrono-side-gold);--chrono-accent-soft:var(--chrono-side-gold-bright);--chrono-accent-pale:var(--chrono-side-gold-bright);--dsw-alias-interactive-bg-hover:color-mix(in srgb,var(--chrono-side-gold) 11%,transparent);--dsw-alias-interactive-bg-active:color-mix(in srgb,var(--chrono-side-gold) 19%,transparent);--dsw-specific-sidebar-nav-item-hover:color-mix(in srgb,var(--chrono-side-gold) 9%,transparent);--dsw-specific-sidebar-nav-item-active:color-mix(in srgb,var(--chrono-side-gold) 17%,transparent);--dsw-specific-sidebar-nav-item-active-accent:color-mix(in srgb,var(--chrono-side-gold) 27%,transparent);--dsw-specific-sidebar-fill:var(--chrono-side-bg);background:linear-gradient(180deg,color-mix(in srgb,var(--chrono-side-gold) 7%,transparent),transparent 96px),var(--chrono-side-bg);border-right-color:color-mix(in srgb,var(--chrono-side-gold) 46%,transparent)}.pI_x6G_sidebarCol{--dsw-alias-bg-base:rgba(26,29,36,.95);--dsw-alias-bg-layer-1:rgba(33,37,46,.96);--dsw-alias-bg-layer-2:#2a2f3a;--dsw-alias-bg-layer-3:#1c2029;--dsw-alias-bg-overlay:rgba(22,24,30,.97);--dsw-specific-menu:rgba(25,28,35,.97);--dsw-specific-selector:rgba(25,28,35,.97);--dsw-specific-input-major:#2a2f3a;--dsw-alias-button-tool-bar-fill:color-mix(in srgb,var(--chrono-side-gold) 9%,transparent);--dsw-alias-toast-bg:#1f242e;--dsw-alias-tooltip-bg:#1f242e}body[data-ds-dark-theme] .pI_x6G_sidebarCol{--chrono-side-bg:rgba(6,7,11,.92)}';
+// ============ WCAG 对比度诊断（开发用，不改运行时逻辑） ============
+function cssRgb(color) {
+  let v = String(color || '').trim();
+  const m = v.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+  if (m) return [Number(m[1]), Number(m[2]), Number(m[3])];
+  return hexRgb(v);
+}
+function lumOf(color) {
+  const [r, g, b] = cssRgb(color).map((c) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4); });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+function contrastRatio(fg, bg) {
+  const l1 = lumOf(fg), l2 = lumOf(bg);
+  const hi = Math.max(l1, l2), lo = Math.min(l1, l2);
+  return (hi + 0.05) / (lo + 0.05);
+}
+function diagPairs(tag, pairs) {
+  for (const [name, fg, bg] of pairs) {
+    const ratio = contrastRatio(fg, bg);
+    const line = '[Chrono Contrast] ' + tag + ' ' + name + ' fg=' + fg + ' bg=' + bg + ' ratio=' + ratio.toFixed(2);
+    if (ratio < 3) { console.warn(line + ' (LOW <3)'); }
+    else if (ratio < 4.5) { console.warn(line + ' (<4.5)'); }
+    else { console.log(line); }
+  }
+}
+function runContrastDiag(presetName, palLight, palDark) {
+  try {
+    const fgInvertedLight = ARCH_PAPER, fillInvertedLight = ARCH_INK;
+    const fgInvertedDark = ARCH_INK, fillInvertedDark = ARCH_PAPER;
+    diagPairs(presetName + '/light', [
+      ['label-primary/bg-base', palLight.ink, palLight.base],
+      ['label-primary/bg-layer-1', palLight.ink, palLight.base],
+      ['label-secondary/bg-layer-1', palLight.inkSoft, palLight.base],
+      ['label-primary-foreground/primary-fill', '#FDF6E4', mix(palLight.accent, '#000000', 0.16)],
+      ['label-primary-inverted/contrast-fill', fgInvertedLight, fillInvertedLight],
+    ]);
+    diagPairs(presetName + '/dark', [
+      ['label-primary/bg-base', palDark.ink, palDark.base],
+      ['label-primary/bg-layer-1', palDark.ink, palDark.raised],
+      ['label-secondary/bg-layer-1', palDark.inkSoft, palDark.raised],
+      ['label-primary-foreground/primary-fill', '#251D0B', palDark.accent],
+      ['label-primary-inverted/contrast-fill', fgInvertedDark, fillInvertedDark],
+    ]);
+  } catch (err) { console.warn('[Chrono Contrast] diag failed', err && err.message); }
+}
+// ============ 黑金侧栏 Rail Surface Token 层（单 Scope root） ============
+// 覆盖 Sidebar 子树内 Sidebar/NewSession/设置/菜单等全部原生 token：
+// TEXT + SURFACE + HOVER + ACTIVE 一次成对切换，任何默认状态文字即可读。
+const RAIL_GOLD = '.pI_x6G_sidebarCol{--chrono-rail-bg:rgba(11,12,17,.97);--chrono-rail-surface:#232833;--chrono-rail-elevated:#2E3542;--chrono-rail-floating:rgba(30,34,42,.985);--chrono-rail-hover:rgba(201,162,75,.11);--chrono-rail-active:rgba(201,162,75,.22);--chrono-rail-hover-solid:rgba(255,255,255,.07);--chrono-rail-ink:#F3EAD5;--chrono-rail-ink2:#CEC1A1;--chrono-rail-ink3:#A79877;--chrono-rail-border:rgba(201,162,75,.4);--chrono-rail-gold:#C9A24B;--chrono-rail-gold-bright:#E3C467;--chrono-rail-contrast-fill:#E9DDBB;--chrono-rail-contrast-text:#241C0F;--dsw-alias-bg-base:var(--chrono-rail-bg);--dsw-alias-bg-layer-1:var(--chrono-rail-surface);--dsw-alias-bg-layer-2:var(--chrono-rail-elevated);--dsw-alias-bg-layer-3:color-mix(in srgb,var(--chrono-rail-elevated) 78%,#000);--dsw-alias-bg-overlay:var(--chrono-rail-floating);--dsw-alias-bg-mask-1:rgba(0,0,0,.2);--dsw-alias-button-contrast-fill:var(--chrono-rail-contrast-fill);--dsw-alias-button-elevated-fill:var(--chrono-rail-elevated);--dsw-alias-button-floating-fill:var(--chrono-rail-floating);--dsw-alias-button-floating-hover:color-mix(in srgb,var(--chrono-rail-gold) 12%,var(--chrono-rail-elevated));--dsw-alias-button-ghost-active-border:color-mix(in srgb,var(--chrono-rail-gold) 45%,transparent);--dsw-alias-button-ghost-active-fill:rgba(255,255,255,.05);--dsw-alias-button-ghost-active-hover:color-mix(in srgb,var(--chrono-rail-gold) 13%,transparent);--dsw-alias-button-tool-bar-fill:rgba(255,255,255,.04);--dsw-alias-button-tool-bar-hover:var(--chrono-rail-hover);--dsw-alias-interactive-bg-hover:var(--chrono-rail-hover);--dsw-alias-interactive-bg-active:var(--chrono-rail-active);--dsw-alias-interactive-bg-hover-solid:var(--chrono-rail-hover-solid);--dsw-alias-interactive-bg-hover-accent:color-mix(in srgb,var(--chrono-rail-gold) 16%,transparent);--dsw-alias-label-primary:var(--chrono-rail-ink);--dsw-alias-label-primary-bluish:var(--chrono-rail-ink);--dsw-alias-label-primary-dimmed:color-mix(in srgb,var(--chrono-rail-ink) 62%,var(--chrono-rail-gold) 38%);--dsw-alias-label-primary-inverted:var(--chrono-rail-contrast-text);--dsw-alias-label-secondary:var(--chrono-rail-ink2);--dsw-alias-label-tertiary:var(--chrono-rail-ink3);--dsw-alias-label-caption:var(--chrono-rail-ink3);--dsw-alias-label-dimmed:color-mix(in srgb,var(--chrono-rail-ink) 64%,transparent);--dsw-alias-border-l1:color-mix(in srgb,var(--chrono-rail-gold) 18%,transparent);--dsw-alias-border-l2:color-mix(in srgb,var(--chrono-rail-gold) 28%,transparent);--dsw-alias-border-l3:color-mix(in srgb,var(--chrono-rail-gold) 44%,transparent);--dsw-alias-border-l4:color-mix(in srgb,var(--chrono-rail-gold) 60%,transparent);--dsw-specific-menu:var(--chrono-rail-floating);--dsw-specific-selector:var(--chrono-rail-floating);--dsw-specific-input-major:#2A303B;--dsw-specific-sidebar-fill:var(--chrono-rail-bg);--dsw-specific-sidebar-nav-item-active:color-mix(in srgb,var(--chrono-rail-gold) 16%,transparent);--dsw-specific-sidebar-nav-item-active-accent:color-mix(in srgb,var(--chrono-rail-gold) 28%,transparent);--dsw-specific-sidebar-nav-item-hover:var(--chrono-rail-hover);--dsw-alias-toast-bg:var(--chrono-rail-floating);--dsw-alias-tooltip-bg:var(--chrono-rail-floating);--chrono-ink:var(--chrono-rail-ink);--chrono-ink-soft:var(--chrono-rail-ink2);--chrono-ink-muted:var(--chrono-rail-ink3);--chrono-accent:var(--chrono-rail-gold);--chrono-accent-soft:var(--chrono-rail-gold-bright);--chrono-accent-pale:var(--chrono-rail-gold-bright);--chrono-selection:rgba(201,162,75,.4);background:linear-gradient(180deg,color-mix(in srgb,var(--chrono-rail-gold) 6%,transparent),transparent 96px),var(--chrono-rail-bg);border-right-color:var(--chrono-rail-border)}body[data-ds-dark-theme] .pI_x6G_sidebarCol{--chrono-rail-bg:rgba(6,7,11,.95);--chrono-rail-surface:#1D222C;--chrono-rail-elevated:#262C38}';
 const PRESETS = {
   bright: { label: '亮纸 · Bright', desc: '高亮暖纸 · 黑金侧栏', rail: RAIL_GOLD, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.72 }, palLight: BRIGHT_LIGHT },
   paper:  { label: '旧纸 · Parchment', desc: '低曝旧纸 · 黑金侧栏', rail: RAIL_GOLD, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.72 }, palLight: {} },
@@ -327,6 +380,7 @@ return {
       state.paletteDark = mergePal(baseDark, p.palDark || {});
       insertRail(p.rail);
       paint();
+      runContrastDiag(name, state.paletteLight, state.paletteDark);
     }
     chronoUI.set = (name) => {
       if (!PRESETS[name]) return;
