@@ -1,9 +1,10 @@
-// Chrono Archive · Client 半区（镜像文件；与 cordis_define code.client 一致）
-// v2：新增「皮肤预设」——黑金侧栏 CSS 按预设注入/移除，壁纸强度随预设调整，
-//     设置页（General）提供一键切换；默认预设 = 当前黑金样式。
-
+// Chrono Archive · Client 半区（镜像文件；与 cordis_define code.client 一致）v4
+// - 预设扩展到「质感」级：亮纸 Bright / 旧纸 Parchment（均黑金侧栏）+ 暖纸 / 安静
+// - 修复设置页文字：黑金侧栏同时把面板/输入/弹层表面压黑金，浅金文字保持对比
 const FALLBACK_LIGHT = { canvas: '#F1EBDB', base: '#EBE2CD', raised: '#F7F1E1', overlayBg: '#FDFAF0', ink: '#32291E', inkSoft: '#665B47', inkMuted: '#948871', accent: '#9B7830', accentSoft: '#BE9443', accentPale: '#E7CA7C', wine: '#8A4438', pine: '#52705A', slate: '#526173', link: '#4A5F86', success: '#55785A', warn: '#9A7A2E', danger: '#A3483C', codeBg: '#F5EEDD', codeBanner: '#EEE5CC', codeInline: '#FAF4E6', selection: '#DDC48E' };
 const FALLBACK_DARK = { canvas: '#101319', base: '#161A22', raised: '#1D232D', overlayBg: '#1B212B', ink: '#EAE2CE', inkSoft: '#BCB39D', inkMuted: '#8F8673', accent: '#C9A24B', accentSoft: '#DFBE6E', accentPale: '#EAD08F', wine: '#A05244', pine: '#6E8D72', slate: '#7E93A8', link: '#A9BFE0', success: '#83A987', warn: '#D9AF5E', danger: '#C96B5B', codeBg: '#0F141C', codeBanner: '#171E29', codeInline: '#232B37', selection: '#8A6F2F' };
+// 亮纸（Bright，即此前高亮暖纸质感）的浅色覆盖值
+const BRIGHT_LIGHT = { canvas: '#F1EBDB', base: '#EBE2CD', raised: '#F7F1E1', overlayBg: '#FDFAF0', ink: '#32291E', inkSoft: '#665B47', inkMuted: '#948871', accent: '#9B7830', accentSoft: '#BE9443', accentPale: '#E7CA7C', wine: '#8A4438', pine: '#52705A', slate: '#526173', link: '#4A5F86', success: '#55785A', warn: '#9A7A2E', danger: '#A3483C', codeBg: '#F5EEDD', codeBanner: '#EEE5CC', codeInline: '#FAF4E6', selection: '#DDC48E' };
 
 function parsePalette(text) {
   const map = {};
@@ -29,7 +30,12 @@ function hexRgb(h) {
 function alpha(h, a) { const c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
 function mix(h1, h2, t) { const a = hexRgb(h1), b = hexRgb(h2); const f = Math.min(1, Math.max(0, t)); const r = Math.round(a[0] + (b[0] - a[0]) * f), g = Math.round(a[1] + (b[1] - a[1]) * f), bl = Math.round(a[2] + (b[2] - a[2]) * f); return '#' + ((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1); }
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-
+function mergePal(base, over) {
+  const o = {};
+  for (const k of Object.keys(base)) o[k] = (over && over[k] !== undefined) ? over[k] : base[k];
+  for (const k of Object.keys(over || {})) if (!(k in base)) o[k] = over[k];
+  return o;
+}
 function schemeTokens(p, cfg, dark) {
   const s = clamp(cfg.solidity, 0.3, 1);
   const baseAlpha = clamp(s * 0.8, 0.45, 0.96);
@@ -85,11 +91,11 @@ function schemeTokens(p, cfg, dark) {
   put('--dsw-alias-interactive-bg-hover-accent', mix(p.accent, p.base, 0.14));
   put('--dsw-alias-interactive-bg-hover-danger', mix(p.danger, p.base, 0.12));
   put('--dsw-alias-interactive-bg-hover-solid', alpha(p.ink, 0.1));
-  put('--dsw-alias-label-caption', alpha(p.inkMuted, 0.92));
-  put('--dsw-alias-label-dimmed', alpha(p.ink, 0.45));
+  put('--dsw-alias-label-caption', alpha(p.inkMuted, 0.96));
+  put('--dsw-alias-label-dimmed', alpha(p.ink, 0.7));
   put('--dsw-alias-label-primary', p.ink);
   put('--dsw-alias-label-primary-bluish', p.ink);
-  put('--dsw-alias-label-primary-dimmed', mix(p.ink, p.base, 0.32));
+  put('--dsw-alias-label-primary-dimmed', mix(p.ink, p.base, 0.3));
   put('--dsw-alias-label-primary-foreground', fgOnAccent);
   put('--dsw-alias-label-primary-inverted', p.canvas);
   put('--dsw-alias-label-secondary', p.inkSoft);
@@ -133,7 +139,6 @@ function schemeTokens(p, cfg, dark) {
   const chroma = { '--chrono-canvas': p.canvas, '--chrono-base': p.base, '--chrono-raised': p.raised, '--chrono-overlay-bg': p.overlayBg, '--chrono-ink': p.ink, '--chrono-ink-soft': p.inkSoft, '--chrono-ink-muted': p.inkMuted, '--chrono-accent': accentFill, '--chrono-accent-soft': p.accentSoft, '--chrono-accent-pale': p.accentPale, '--chrono-wine': p.wine, '--chrono-pine': p.pine, '--chrono-slate': p.slate, '--chrono-link': p.link, '--chrono-success': p.success, '--chrono-warn': p.warn, '--chrono-danger': p.danger, '--chrono-code-bg': p.codeBg, '--chrono-code-banner': p.codeBanner, '--chrono-code-inline': p.codeInline, '--chrono-selection': p.selection };
   return Object.assign(t, chroma);
 }
-
 function composeOverrideMap(lightTokens, darkTokens) {
   const names = Object.keys(lightTokens);
   const map = {};
@@ -146,26 +151,19 @@ function composeOverrideMap(lightTokens, darkTokens) {
 function pickPalette(scheme, cfg, filesLight, filesDark) {
   const base = scheme === 'dark' ? FALLBACK_DARK : FALLBACK_LIGHT;
   const over = scheme === 'dark' ? filesDark || {} : filesLight || {};
-  const out = {};
-  for (const k of Object.keys(base)) out[k] = over[k] !== undefined ? over[k] : base[k];
-  for (const k of Object.keys(over)) if (out[k] === undefined) out[k] = over[k];
-  return out;
+  return mergePal(base, over);
 }
-
-// ================= 预设系统 =================
-// RAIL_GOLD：黑金侧栏样式（默认注入）。在侧栏列子树内重定义 label/border 等 token
-// 为浅金值——正文区不受影响；仅引用当前构建的单个布局列类（装饰性，卸载即移除）。
-const RAIL_GOLD = '.pI_x6G_sidebarCol{--chrono-side-bg:rgba(13,14,19,.94);--chrono-side-gold:#C9A24B;--chrono-side-gold-bright:#E3C467;--chrono-side-ink:#F1E7CF;--dsw-alias-label-primary:var(--chrono-side-ink);--dsw-alias-label-primary-bluish:var(--chrono-side-ink);--dsw-alias-label-primary-dimmed:color-mix(in srgb,var(--chrono-side-ink) 62%,var(--chrono-side-gold) 38%);--dsw-alias-label-secondary:color-mix(in srgb,var(--chrono-side-ink) 70%,var(--chrono-side-gold) 30%);--dsw-alias-label-tertiary:color-mix(in srgb,var(--chrono-side-ink) 52%,var(--chrono-side-gold) 48%);--dsw-alias-label-caption:color-mix(in srgb,var(--chrono-side-ink) 42%,var(--chrono-side-gold) 58%);--dsw-alias-label-dimmed:color-mix(in srgb,var(--chrono-side-gold) 34%,transparent);--dsw-alias-border-l1:color-mix(in srgb,var(--chrono-side-gold) 16%,transparent);--dsw-alias-border-l2:color-mix(in srgb,var(--chrono-side-gold) 26%,transparent);--dsw-alias-border-l3:color-mix(in srgb,var(--chrono-side-gold) 40%,transparent);--dsw-alias-border-l4:color-mix(in srgb,var(--chrono-side-gold) 55%,transparent);--chrono-ink:var(--chrono-side-ink);--chrono-ink-soft:color-mix(in srgb,var(--chrono-side-ink) 70%,var(--chrono-side-gold) 30%);--chrono-ink-muted:color-mix(in srgb,var(--chrono-side-ink) 50%,var(--chrono-side-gold) 50%);--chrono-accent:var(--chrono-side-gold);--chrono-accent-soft:var(--chrono-side-gold-bright);--chrono-accent-pale:var(--chrono-side-gold-bright);--dsw-alias-interactive-bg-hover:color-mix(in srgb,var(--chrono-side-gold) 10%,transparent);--dsw-alias-interactive-bg-active:color-mix(in srgb,var(--chrono-side-gold) 18%,transparent);--dsw-specific-sidebar-nav-item-hover:color-mix(in srgb,var(--chrono-side-gold) 9%,transparent);--dsw-specific-sidebar-nav-item-active:color-mix(in srgb,var(--chrono-side-gold) 16%,transparent);--dsw-specific-sidebar-nav-item-active-accent:color-mix(in srgb,var(--chrono-side-gold) 26%,transparent);--dsw-specific-sidebar-fill:var(--chrono-side-bg);background:linear-gradient(180deg,color-mix(in srgb,var(--chrono-side-gold) 7%,transparent),transparent 96px),var(--chrono-side-bg);border-right-color:color-mix(in srgb,var(--chrono-side-gold) 45%,transparent)}body[data-ds-dark-theme] .pI_x6G_sidebarCol{--chrono-side-bg:rgba(7,8,12,.92)}';
-
+// 黑金侧栏：侧栏子树重定义文字/边框为浅金 + 表面压黑金，避免设置面板浅字贴浅底。
+// 说明：.pI_x6G_sidebarCol 为当前构建布局列类（装饰性选择器，卸载即移除）。
+const RAIL_GOLD = '.pI_x6G_sidebarCol{--chrono-side-bg:rgba(13,14,19,.95);--chrono-side-gold:#C9A24B;--chrono-side-gold-bright:#E3C467;--chrono-side-ink:#F3E9D2;--chrono-surface:#232732;--dsw-alias-label-primary:var(--chrono-side-ink);--dsw-alias-label-primary-bluish:var(--chrono-side-ink);--dsw-alias-label-primary-dimmed:color-mix(in srgb,var(--chrono-side-ink) 64%,var(--chrono-side-gold) 36%);--dsw-alias-label-secondary:color-mix(in srgb,var(--chrono-side-ink) 72%,var(--chrono-side-gold) 28%);--dsw-alias-label-tertiary:color-mix(in srgb,var(--chrono-side-ink) 56%,var(--chrono-side-gold) 44%);--dsw-alias-label-caption:color-mix(in srgb,var(--chrono-side-ink) 48%,var(--chrono-side-gold) 52%);--dsw-alias-label-dimmed:color-mix(in srgb,var(--chrono-side-ink) 62%,transparent);--dsw-alias-border-l1:color-mix(in srgb,var(--chrono-side-gold) 18%,transparent);--dsw-alias-border-l2:color-mix(in srgb,var(--chrono-side-gold) 28%,transparent);--dsw-alias-border-l3:color-mix(in srgb,var(--chrono-side-gold) 42%,transparent);--dsw-alias-border-l4:color-mix(in srgb,var(--chrono-side-gold) 58%,transparent);--chrono-ink:var(--chrono-side-ink);--chrono-ink-soft:color-mix(in srgb,var(--chrono-side-ink) 72%,var(--chrono-side-gold) 28%);--chrono-ink-muted:color-mix(in srgb,var(--chrono-side-ink) 52%,var(--chrono-side-gold) 48%);--chrono-accent:var(--chrono-side-gold);--chrono-accent-soft:var(--chrono-side-gold-bright);--chrono-accent-pale:var(--chrono-side-gold-bright);--dsw-alias-interactive-bg-hover:color-mix(in srgb,var(--chrono-side-gold) 11%,transparent);--dsw-alias-interactive-bg-active:color-mix(in srgb,var(--chrono-side-gold) 19%,transparent);--dsw-specific-sidebar-nav-item-hover:color-mix(in srgb,var(--chrono-side-gold) 9%,transparent);--dsw-specific-sidebar-nav-item-active:color-mix(in srgb,var(--chrono-side-gold) 17%,transparent);--dsw-specific-sidebar-nav-item-active-accent:color-mix(in srgb,var(--chrono-side-gold) 27%,transparent);--dsw-specific-sidebar-fill:var(--chrono-side-bg);background:linear-gradient(180deg,color-mix(in srgb,var(--chrono-side-gold) 7%,transparent),transparent 96px),var(--chrono-side-bg);border-right-color:color-mix(in srgb,var(--chrono-side-gold) 46%,transparent)}.pI_x6G_sidebarCol{--dsw-alias-bg-base:rgba(26,29,36,.95);--dsw-alias-bg-layer-1:rgba(33,37,46,.96);--dsw-alias-bg-layer-2:#2a2f3a;--dsw-alias-bg-layer-3:#1c2029;--dsw-alias-bg-overlay:rgba(22,24,30,.97);--dsw-specific-menu:rgba(25,28,35,.97);--dsw-specific-selector:rgba(25,28,35,.97);--dsw-specific-input-major:#2a2f3a;--dsw-alias-button-tool-bar-fill:color-mix(in srgb,var(--chrono-side-gold) 9%,transparent);--dsw-alias-toast-bg:#1f242e;--dsw-alias-tooltip-bg:#1f242e}body[data-ds-dark-theme] .pI_x6G_sidebarCol{--chrono-side-bg:rgba(6,7,11,.92)}';
 const PRESETS = {
-  gold:  { label: '黑金 · Chrono Gold', desc: '当前样式：黑金侧栏 · 壁纸清晰', rail: RAIL_GOLD, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.66 } },
-  warm:  { label: '暖纸 · Warm Archive', desc: '暖纸档案：半透明暖侧栏', rail: '', settings: { opacity: 0.6, blur: '0px', sat: 1.02, contrast: 1.02, solidity: 0.72 } },
-  quiet: { label: '安静 · Quiet', desc: '低干扰阅读：壁纸更淡更柔', rail: '', settings: { opacity: 0.34, blur: '4px', sat: 0.95, contrast: 1.0, solidity: 0.9 } },
+  bright: { label: '亮纸 · Bright', desc: '高亮暖纸 · 黑金侧栏', rail: RAIL_GOLD, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.72 }, palLight: BRIGHT_LIGHT },
+  paper:  { label: '旧纸 · Parchment', desc: '低曝旧纸 · 黑金侧栏', rail: RAIL_GOLD, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.72 }, palLight: {} },
+  warm:   { label: '暖纸 · Warm', desc: '半透明暖侧栏', rail: '', settings: { opacity: 0.6, blur: '0px', sat: 1.02, contrast: 1.02, solidity: 0.76 }, palLight: {} },
+  quiet:  { label: '安静 · Quiet', desc: '低干扰阅读', rail: '', settings: { opacity: 0.34, blur: '4px', sat: 0.95, contrast: 1.0, solidity: 0.9 }, palLight: {} },
 };
-const chronoUI = { current: 'gold', set: null, subs: [] };
+const chronoUI = { current: 'bright', set: null, subs: [] };
 chronoUI.notify = function () { for (const cb of this.subs.slice()) { try { cb(); } catch (_) {} } };
-
-// ================= 装饰组件（.chrono-*，scoped）=================
 const SERIF = "Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif";
 function SealSvg(props) {
   const inner = props.text || 'CA';
@@ -213,7 +211,7 @@ function ChronoPresetsRow() {
   }, []);
   const names = Object.keys(PRESETS);
   const current = chronoUI.current;
-  const active = PRESETS[current] || PRESETS.gold;
+  const active = PRESETS[current] || PRESETS.bright;
   return React.createElement('div', { className: 'chrono-preset-row' },
     React.createElement('span', { className: 'chrono-preset-title' }, 'CHRONO ARCHIVE · 时序档案馆 皮肤预设'),
     React.createElement('div', { className: 'chrono-preset-chips' },
@@ -226,7 +224,6 @@ function ChronoPresetsRow() {
       }, PRESETS[name].label))),
     React.createElement('span', { className: 'chrono-preset-desc' }, active.desc + ' — 卸载插件即恢复默认外观'));
 }
-
 return {
   inject: ['slots', 'theme', 'timer'],
   apply(ctx) {
@@ -234,13 +231,13 @@ return {
     const theme = ctx.get('theme');
     const timer = ctx.get('timer');
     if (slots === undefined || theme === undefined || timer === undefined) return;
-
     let latestDispose = null;
     let intervalDispose = null;
     let railDispose = null;
     let alive = true;
-    let state = { preset: 'gold', paletteLight: FALLBACK_LIGHT, paletteDark: FALLBACK_DARK, settings: { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 0, solidity: 0.66 }, walls: [], index: 0, visible: 'B', artA: '', artB: '', opA: 0, opB: 0 };
-
+    let baseLight = FALLBACK_LIGHT;
+    let baseDark = FALLBACK_DARK;
+    let state = { preset: 'bright', paletteLight: FALLBACK_LIGHT, paletteDark: FALLBACK_DARK, settings: { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 0, solidity: 0.72 }, walls: [], index: 0, visible: 'B', artA: '', artB: '', opA: 0, opB: 0 };
     function buildAllTokens() {
       const cfg = state.settings;
       const light = schemeTokens(state.paletteLight, cfg, false);
@@ -283,20 +280,17 @@ return {
       if (n < 2) return;
       const next = (state.index + 1) % n;
       const op = String(state.settings.opacity);
-      if (state.visible === 'A') {
-        state.artB = urlOf(next);
-        state.opA = 0; state.opB = op; state.visible = 'B';
-      } else {
-        state.artA = urlOf(next);
-        state.opB = 0; state.opA = op; state.visible = 'A';
-      }
+      if (state.visible === 'A') { state.artB = urlOf(next); state.opA = 0; state.opB = op; state.visible = 'B'; }
+      else { state.artA = urlOf(next); state.opB = 0; state.opA = op; state.visible = 'A'; }
       state.index = next;
       paint();
     }
     function applyPreset(name) {
-      const p = PRESETS[name] || PRESETS.gold;
+      const p = PRESETS[name] || PRESETS.bright;
       state.preset = name;
       state.settings = Object.assign({}, state.settings, p.settings);
+      state.paletteLight = mergePal(baseLight, p.palLight || {});
+      state.paletteDark = mergePal(baseDark, p.palDark || {});
       insertRail(p.rail);
       paint();
     }
@@ -307,17 +301,13 @@ return {
       try { applyPreset(name); } catch (err) { console.error('[chrono-archive] preset failed', err && err.message); }
       chronoUI.notify();
     };
-
-    // 默认按黑金侧栏注入（等配置到达后由 applyPreset 校准强度）
     insertRail(RAIL_GOLD);
-
     slots.inject('sidebar.brand.mark', () => slots.register({ name: 'sidebar.brand.mark' }, ChronoBrandMark));
     slots.inject('sidebar.brand.name', () => slots.register({ name: 'sidebar.brand.name' }, ChronoBrandName));
     slots.inject('conversation.hero.brand.mark', () => slots.register({ name: 'conversation.hero.brand.mark' }, HeroBrandMark));
     slots.inject('conversation.composer.dock', () => slots.register({ name: 'conversation.composer.dock', id: 'chrono-archive', order: 30 }, ChronoDock));
     slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'chrono-archive', order: 90 }, ChronoAmbience));
     slots.inject('settings.general.item', () => slots.register({ name: 'settings.general.item', id: 'chrono-archive', order: 90 }, ChronoPresetsRow));
-
     ctx.effect(() => () => {
       alive = false;
       try { if (latestDispose) latestDispose(); } catch (_) {}
@@ -325,15 +315,14 @@ return {
       try { if (railDispose) railDispose(); } catch (_) {}
       chronoUI.subs = [];
     }, 'chrono-archive: lifecycle cleanup');
-
     (async () => {
       try {
         const cfg = await host.call('chrono/config', {});
         if (!cfg || !cfg.ok) return;
         const cssRes = await host.call('chrono/css', {});
         if (cssRes && cssRes.ok && cssRes.css) styles.insert(cssRes.css);
-        state.paletteLight = pickPalette('light', cfg.settings, cfg.palettes && cfg.palettes.light, {});
-        state.paletteDark = pickPalette('dark', cfg.settings, {}, cfg.palettes && cfg.palettes.dark);
+        baseLight = pickPalette('light', cfg.settings, cfg.palettes && cfg.palettes.light, {});
+        baseDark = pickPalette('dark', cfg.settings, {}, cfg.palettes && cfg.palettes.dark);
         state.settings = cfg.settings || state.settings;
         state.walls = (cfg.wallpapers || []).map((w) => ({ url: w.url, pos: w.pos || '' }));
         state.index = 0;
