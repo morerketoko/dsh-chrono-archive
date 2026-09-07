@@ -6,8 +6,8 @@ base: #EBE2CD
 raised: #F7F1E1
 overlayBg: #FDFAF0
 ink: #32291E
-inkSoft: #665B47
-inkMuted: #948871
+inkSoft: #57493A
+inkMuted: #776851
 accent: #9B7830
 accentSoft: #BE9443
 accentPale: #E7CA7C
