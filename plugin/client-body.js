@@ -1,8 +1,8 @@
-// Chrono Archive · Client 半区（镜像文件；与 cordis_define code.client 完全一致）
-// 职责：读取 Host 提供的配置/CSS，用官方 theme.overrideTokens 应用双色板 token，
-//       用 styles.insert 注入皮肤 CSS，注册字标/印章/氛围/装饰插槽，驱动多壁纸轮换。
+// Chrono Archive · Client 半区（镜像文件；与 cordis_define code.client 一致）
+// v2：新增「皮肤预设」——黑金侧栏 CSS 按预设注入/移除，壁纸强度随预设调整，
+//     设置页（General）提供一键切换；默认预设 = 当前黑金样式。
 
-const FALLBACK_LIGHT = { canvas: '#EDE6D4', base: '#E6DCC6', raised: '#F3ECD9', overlayBg: '#FBF6E9', ink: '#32291E', inkSoft: '#5F5540', inkMuted: '#8A7D63', accent: '#96732B', accentSoft: '#B78F3E', accentPale: '#E3C467', wine: '#8A4438', pine: '#52705A', slate: '#526173', link: '#4A5F86', success: '#55785A', warn: '#9A7A2E', danger: '#A3483C', codeBg: '#F2EAD6', codeBanner: '#E9DFC6', codeInline: '#F6EFDE', selection: '#D9C084' };
+const FALLBACK_LIGHT = { canvas: '#F1EBDB', base: '#EBE2CD', raised: '#F7F1E1', overlayBg: '#FDFAF0', ink: '#32291E', inkSoft: '#665B47', inkMuted: '#948871', accent: '#9B7830', accentSoft: '#BE9443', accentPale: '#E7CA7C', wine: '#8A4438', pine: '#52705A', slate: '#526173', link: '#4A5F86', success: '#55785A', warn: '#9A7A2E', danger: '#A3483C', codeBg: '#F5EEDD', codeBanner: '#EEE5CC', codeInline: '#FAF4E6', selection: '#DDC48E' };
 const FALLBACK_DARK = { canvas: '#101319', base: '#161A22', raised: '#1D232D', overlayBg: '#1B212B', ink: '#EAE2CE', inkSoft: '#BCB39D', inkMuted: '#8F8673', accent: '#C9A24B', accentSoft: '#DFBE6E', accentPale: '#EAD08F', wine: '#A05244', pine: '#6E8D72', slate: '#7E93A8', link: '#A9BFE0', success: '#83A987', warn: '#D9AF5E', danger: '#C96B5B', codeBg: '#0F141C', codeBanner: '#171E29', codeInline: '#232B37', selection: '#8A6F2F' };
 
 function parsePalette(text) {
@@ -30,7 +30,6 @@ function alpha(h, a) { const c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] +
 function mix(h1, h2, t) { const a = hexRgb(h1), b = hexRgb(h2); const f = Math.min(1, Math.max(0, t)); const r = Math.round(a[0] + (b[0] - a[0]) * f), g = Math.round(a[1] + (b[1] - a[1]) * f), bl = Math.round(a[2] + (b[2] - a[2]) * f); return '#' + ((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1); }
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
-// —— 由一份语义 palette 派生整套 --dsw-* 该配色方案的取值 ——
 function schemeTokens(p, cfg, dark) {
   const s = clamp(cfg.solidity, 0.3, 1);
   const baseAlpha = clamp(s * 0.8, 0.45, 0.96);
@@ -131,12 +130,10 @@ function schemeTokens(p, cfg, dark) {
   put('--dsw-specific-sidebar-nav-item-active-accent', mix(p.accent, p.base, 0.2));
   put('--dsw-specific-sidebar-nav-item-hover', alpha(p.ink, 0.06));
   put('--dsw-specific-tip', dark ? mix(p.pine, p.base, 0.16) : mix(p.pine, p.base, 0.08));
-  // 供 skin.css 消费的档案语义变量（浅/深两套独立取值）
   const chroma = { '--chrono-canvas': p.canvas, '--chrono-base': p.base, '--chrono-raised': p.raised, '--chrono-overlay-bg': p.overlayBg, '--chrono-ink': p.ink, '--chrono-ink-soft': p.inkSoft, '--chrono-ink-muted': p.inkMuted, '--chrono-accent': accentFill, '--chrono-accent-soft': p.accentSoft, '--chrono-accent-pale': p.accentPale, '--chrono-wine': p.wine, '--chrono-pine': p.pine, '--chrono-slate': p.slate, '--chrono-link': p.link, '--chrono-success': p.success, '--chrono-warn': p.warn, '--chrono-danger': p.danger, '--chrono-code-bg': p.codeBg, '--chrono-code-banner': p.codeBanner, '--chrono-code-inline': p.codeInline, '--chrono-selection': p.selection };
   return Object.assign(t, chroma);
 }
 
-// —— 由 light/dark 两套推导结果合成 overrideTokens 需要的 {light,dark} 对 ——
 function composeOverrideMap(lightTokens, darkTokens) {
   const names = Object.keys(lightTokens);
   const map = {};
@@ -155,7 +152,20 @@ function pickPalette(scheme, cfg, filesLight, filesDark) {
   return out;
 }
 
-// —— 装饰组件（class 全部 .chrono-*，scoped）——
+// ================= 预设系统 =================
+// RAIL_GOLD：黑金侧栏样式（默认注入）。在侧栏列子树内重定义 label/border 等 token
+// 为浅金值——正文区不受影响；仅引用当前构建的单个布局列类（装饰性，卸载即移除）。
+const RAIL_GOLD = '.pI_x6G_sidebarCol{--chrono-side-bg:rgba(13,14,19,.94);--chrono-side-gold:#C9A24B;--chrono-side-gold-bright:#E3C467;--chrono-side-ink:#F1E7CF;--dsw-alias-label-primary:var(--chrono-side-ink);--dsw-alias-label-primary-bluish:var(--chrono-side-ink);--dsw-alias-label-primary-dimmed:color-mix(in srgb,var(--chrono-side-ink) 62%,var(--chrono-side-gold) 38%);--dsw-alias-label-secondary:color-mix(in srgb,var(--chrono-side-ink) 70%,var(--chrono-side-gold) 30%);--dsw-alias-label-tertiary:color-mix(in srgb,var(--chrono-side-ink) 52%,var(--chrono-side-gold) 48%);--dsw-alias-label-caption:color-mix(in srgb,var(--chrono-side-ink) 42%,var(--chrono-side-gold) 58%);--dsw-alias-label-dimmed:color-mix(in srgb,var(--chrono-side-gold) 34%,transparent);--dsw-alias-border-l1:color-mix(in srgb,var(--chrono-side-gold) 16%,transparent);--dsw-alias-border-l2:color-mix(in srgb,var(--chrono-side-gold) 26%,transparent);--dsw-alias-border-l3:color-mix(in srgb,var(--chrono-side-gold) 40%,transparent);--dsw-alias-border-l4:color-mix(in srgb,var(--chrono-side-gold) 55%,transparent);--chrono-ink:var(--chrono-side-ink);--chrono-ink-soft:color-mix(in srgb,var(--chrono-side-ink) 70%,var(--chrono-side-gold) 30%);--chrono-ink-muted:color-mix(in srgb,var(--chrono-side-ink) 50%,var(--chrono-side-gold) 50%);--chrono-accent:var(--chrono-side-gold);--chrono-accent-soft:var(--chrono-side-gold-bright);--chrono-accent-pale:var(--chrono-side-gold-bright);--dsw-alias-interactive-bg-hover:color-mix(in srgb,var(--chrono-side-gold) 10%,transparent);--dsw-alias-interactive-bg-active:color-mix(in srgb,var(--chrono-side-gold) 18%,transparent);--dsw-specific-sidebar-nav-item-hover:color-mix(in srgb,var(--chrono-side-gold) 9%,transparent);--dsw-specific-sidebar-nav-item-active:color-mix(in srgb,var(--chrono-side-gold) 16%,transparent);--dsw-specific-sidebar-nav-item-active-accent:color-mix(in srgb,var(--chrono-side-gold) 26%,transparent);--dsw-specific-sidebar-fill:var(--chrono-side-bg);background:linear-gradient(180deg,color-mix(in srgb,var(--chrono-side-gold) 7%,transparent),transparent 96px),var(--chrono-side-bg);border-right-color:color-mix(in srgb,var(--chrono-side-gold) 45%,transparent)}body[data-ds-dark-theme] .pI_x6G_sidebarCol{--chrono-side-bg:rgba(7,8,12,.92)}';
+
+const PRESETS = {
+  gold:  { label: '黑金 · Chrono Gold', desc: '当前样式：黑金侧栏 · 壁纸清晰', rail: RAIL_GOLD, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.66 } },
+  warm:  { label: '暖纸 · Warm Archive', desc: '暖纸档案：半透明暖侧栏', rail: '', settings: { opacity: 0.6, blur: '0px', sat: 1.02, contrast: 1.02, solidity: 0.72 } },
+  quiet: { label: '安静 · Quiet', desc: '低干扰阅读：壁纸更淡更柔', rail: '', settings: { opacity: 0.34, blur: '4px', sat: 0.95, contrast: 1.0, solidity: 0.9 } },
+};
+const chronoUI = { current: 'gold', set: null, subs: [] };
+chronoUI.notify = function () { for (const cb of this.subs.slice()) { try { cb(); } catch (_) {} } };
+
+// ================= 装饰组件（.chrono-*，scoped）=================
 const SERIF = "Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif";
 function SealSvg(props) {
   const inner = props.text || 'CA';
@@ -194,10 +204,27 @@ function ChronoAmbience() {
     React.createElement('div', { className: 'chrono-grain' }),
     React.createElement('div', { className: 'chrono-ambient-glow' }));
 }
-function ChronoInfoRow() {
-  return React.createElement('div', { className: 'chrono-skin-row' },
-    React.createElement('span', { className: 'chrono-skin-row-title' }, 'CHRONO ARCHIVE · 时序档案馆'),
-    React.createElement('span', { className: 'chrono-skin-row-sub' }, '皮肤已激活 — 卸载插件即恢复默认外观'));
+function ChronoPresetsRow() {
+  const [, bump] = React.useState(0);
+  React.useEffect(() => {
+    const cb = () => bump((n) => n + 1);
+    chronoUI.subs.push(cb);
+    return () => { const i = chronoUI.subs.indexOf(cb); if (i >= 0) chronoUI.subs.splice(i, 1); };
+  }, []);
+  const names = Object.keys(PRESETS);
+  const current = chronoUI.current;
+  const active = PRESETS[current] || PRESETS.gold;
+  return React.createElement('div', { className: 'chrono-preset-row' },
+    React.createElement('span', { className: 'chrono-preset-title' }, 'CHRONO ARCHIVE · 时序档案馆 皮肤预设'),
+    React.createElement('div', { className: 'chrono-preset-chips' },
+      names.map((name) => React.createElement('button', {
+        key: name,
+        type: 'button',
+        className: 'chrono-preset-chip',
+        'data-active': String(name === current),
+        onClick: () => { if (chronoUI.set) chronoUI.set(name); },
+      }, PRESETS[name].label))),
+    React.createElement('span', { className: 'chrono-preset-desc' }, active.desc + ' — 卸载插件即恢复默认外观'));
 }
 
 return {
@@ -210,14 +237,20 @@ return {
 
     let latestDispose = null;
     let intervalDispose = null;
+    let railDispose = null;
     let alive = true;
-    let state = { paletteLight: FALLBACK_LIGHT, paletteDark: FALLBACK_DARK, settings: { pos: 'center 38%', size: 'cover', opacity: 0.5, blur: '3px', sat: 1, contrast: 1.02, cycleSeconds: 0, solidity: 0.8 }, walls: [], index: 0, visible: 'B', artA: '', artB: '', opA: 0, opB: 0 };
+    let state = { preset: 'gold', paletteLight: FALLBACK_LIGHT, paletteDark: FALLBACK_DARK, settings: { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 0, solidity: 0.66 }, walls: [], index: 0, visible: 'B', artA: '', artB: '', opA: 0, opB: 0 };
 
     function buildAllTokens() {
       const cfg = state.settings;
       const light = schemeTokens(state.paletteLight, cfg, false);
       const dark = schemeTokens(state.paletteDark, cfg, true);
       return composeOverrideMap(light, dark);
+    }
+    function insertRail(css) {
+      try { if (railDispose) railDispose(); } catch (_) {}
+      railDispose = null;
+      if (css) { try { railDispose = styles.insert(css); } catch (_) {} }
     }
     function paint() {
       if (!alive || theme === undefined) return;
@@ -251,30 +284,48 @@ return {
       const next = (state.index + 1) % n;
       const op = String(state.settings.opacity);
       if (state.visible === 'A') {
-        // 上层 B 淡入覆盖 A
         state.artB = urlOf(next);
         state.opA = 0; state.opB = op; state.visible = 'B';
       } else {
-        // 上层 B 淡出，显露下层 A（新图）
         state.artA = urlOf(next);
         state.opB = 0; state.opA = op; state.visible = 'A';
       }
       state.index = next;
       paint();
     }
+    function applyPreset(name) {
+      const p = PRESETS[name] || PRESETS.gold;
+      state.preset = name;
+      state.settings = Object.assign({}, state.settings, p.settings);
+      insertRail(p.rail);
+      paint();
+    }
+    chronoUI.set = (name) => {
+      if (!PRESETS[name]) return;
+      if (chronoUI.current === name) return;
+      chronoUI.current = name;
+      try { applyPreset(name); } catch (err) { console.error('[chrono-archive] preset failed', err && err.message); }
+      chronoUI.notify();
+    };
 
-    // 注册插槽（随 Run 自动清理）
+    // 默认按黑金侧栏注入（等配置到达后由 applyPreset 校准强度）
+    insertRail(RAIL_GOLD);
+
     slots.inject('sidebar.brand.mark', () => slots.register({ name: 'sidebar.brand.mark' }, ChronoBrandMark));
     slots.inject('sidebar.brand.name', () => slots.register({ name: 'sidebar.brand.name' }, ChronoBrandName));
     slots.inject('conversation.hero.brand.mark', () => slots.register({ name: 'conversation.hero.brand.mark' }, HeroBrandMark));
     slots.inject('conversation.composer.dock', () => slots.register({ name: 'conversation.composer.dock', id: 'chrono-archive', order: 30 }, ChronoDock));
     slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'chrono-archive', order: 90 }, ChronoAmbience));
-    slots.inject('settings.general.item', () => slots.register({ name: 'settings.general.item', id: 'chrono-archive', order: 90 }, ChronoInfoRow));
+    slots.inject('settings.general.item', () => slots.register({ name: 'settings.general.item', id: 'chrono-archive', order: 90 }, ChronoPresetsRow));
 
-    // 生命周期清理：停止/卸载时收回 token 层与轮换定时器
-    ctx.effect(() => () => { alive = false; try { if (latestDispose) latestDispose(); } catch (_) {} try { if (intervalDispose) intervalDispose(); } catch (_) {} }, 'chrono-archive: token layer cleanup');
+    ctx.effect(() => () => {
+      alive = false;
+      try { if (latestDispose) latestDispose(); } catch (_) {}
+      try { if (intervalDispose) intervalDispose(); } catch (_) {}
+      try { if (railDispose) railDispose(); } catch (_) {}
+      chronoUI.subs = [];
+    }, 'chrono-archive: lifecycle cleanup');
 
-    // 数据引导：取配置与 CSS（异步，不阻塞注册）
     (async () => {
       try {
         const cfg = await host.call('chrono/config', {});
@@ -287,6 +338,7 @@ return {
         state.walls = (cfg.wallpapers || []).map((w) => ({ url: w.url, pos: w.pos || '' }));
         state.index = 0;
         paintInitial();
+        applyPreset(chronoUI.current);
         const secs = Number(state.settings.cycleSeconds) || 0;
         if (state.walls.length > 1 && secs >= 5) {
           intervalDispose = timer.interval(() => { if (alive) advance(); }, secs * 1000);

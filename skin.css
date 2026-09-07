@@ -260,6 +260,56 @@ body {
   color: var(--chrono-ink-muted);
 }
 
+/* 6.6 皮肤预设控件（设置页 · General） */
+.chrono-preset-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 520px;
+}
+.chrono-preset-title {
+  font-family: var(--chrono-editorial);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--chrono-ink);
+}
+.chrono-preset-desc {
+  font-size: 11px;
+  color: var(--chrono-ink-muted);
+}
+.chrono-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chrono-preset-chip {
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  color: var(--chrono-ink-soft);
+  background: transparent;
+  border: 0.5px solid color-mix(in srgb, var(--chrono-ink-muted) 45%, transparent);
+  border-radius: 6px;
+  padding: 7px 10px;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.chrono-preset-chip:hover {
+  color: var(--chrono-accent-soft);
+  border-color: color-mix(in srgb, var(--chrono-accent-soft) 55%, transparent);
+}
+.chrono-preset-chip[data-active="true"] {
+  color: var(--chrono-ink);
+  background: color-mix(in srgb, var(--chrono-accent-soft) 18%, transparent);
+  border-color: color-mix(in srgb, var(--chrono-accent-soft) 70%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chrono-preset-chip {
+    transition: none;
+  }
+}
+
 /* ---------- 7. 动效克制 ---------- */
 @media (prefers-reduced-motion: reduce) {
   body::before,
