@@ -280,10 +280,6 @@ window.__ModuleLoader__.load({
 				map['--chrono-blur'] = { light: settings.blur, dark: settings.blur };
 				map['--chrono-sat'] = { light: String(settings.sat), dark: String(settings.sat) };
 				map['--chrono-contrast'] = { light: String(settings.contrast), dark: String(settings.contrast) };
-				const clarity = clamp(settings.opacity, 0, 1);
-				map['--chrono-clarity'] = { light: String(clarity), dark: String(clarity) };
-				const glassBlur = clarity >= 0.9 ? '14px' : (clarity >= 0.7 ? '6px' : '0px');
-				map['--chrono-glass-blur'] = { light: glassBlur, dark: glassBlur };
 				try { latestDispose = theme.overrideTokens('chrono-archive', map); } catch (e) { console.error('[chrono-archive-theme] override failed', e && e.message); }
 			}
 			const urlOf = (i) => (walls.length ? 'url("' + walls[i % walls.length].url + '")' : 'none');

@@ -41,26 +41,19 @@ body::after {
 /* 背景栈：壁纸在最底 → 档案 wash 压暗（轻）→ 极轻暗角 */
 body::before {
   background-image:
-    radial-gradient(130% 100% at 50% 0%, transparent 66%, color-mix(in srgb, var(--chrono-ink, #000) calc(6% * (1 - var(--chrono-clarity, 0))), transparent) 100%),
-    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) calc(24% * (1 - var(--chrono-clarity, 0))), transparent), color-mix(in srgb, var(--chrono-canvas, #101319) calc(34% * (1 - var(--chrono-clarity, 0))), transparent)),
+    radial-gradient(130% 100% at 50% 0%, transparent 66%, color-mix(in srgb, var(--chrono-ink, #000) 6%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 24%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 34%, transparent)),
     var(--chrono-art-a, none);
   opacity: var(--chrono-op-a, 0);
   filter: blur(var(--chrono-blur, 3px)) saturate(var(--chrono-sat, 1)) contrast(var(--chrono-contrast, 1.02));
 }
 body::after {
   background-image:
-    radial-gradient(130% 100% at 50% 0%, transparent 66%, color-mix(in srgb, var(--chrono-ink, #000) calc(6% * (1 - var(--chrono-clarity, 0))), transparent) 100%),
-    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) calc(24% * (1 - var(--chrono-clarity, 0))), transparent), color-mix(in srgb, var(--chrono-canvas, #101319) calc(34% * (1 - var(--chrono-clarity, 0))), transparent)),
+    radial-gradient(130% 100% at 50% 0%, transparent 66%, color-mix(in srgb, var(--chrono-ink, #000) 6%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 24%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 34%, transparent)),
     var(--chrono-art-b, none);
   opacity: var(--chrono-op-b, 0);
   filter: blur(var(--chrono-blur, 3px)) saturate(var(--chrono-sat, 1)) contrast(var(--chrono-contrast, 1.02));
-}
-
-/* 全清晰壁纸时的“玻璃窗”：让正文区域背景模糊化保证文字可读
-   （clarity=1 → --chrono-glass-blur≈14px；平时 0 无开销） */
-.pI_x6G_centerCol {
-  -webkit-backdrop-filter: blur(var(--chrono-glass-blur, 0px)) saturate(0.92);
-  backdrop-filter: blur(var(--chrono-glass-blur, 0px)) saturate(0.92);
 }
 
 /* ---------- 3. 档案字体编排 ----------
