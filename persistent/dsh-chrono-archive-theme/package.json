@@ -1,0 +1,29 @@
+{
+  "name": "dsh-chrono-archive-theme",
+  "version": "1.5.0",
+  "description": "Chrono Archive (时序档案馆) persistent skin for the DeepSeek Harness Web UI: light/dark archival palettes, black-gold rail, wallpaper backdrop rotation, favicon.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "react": "^18.2.0"
+  }
+}

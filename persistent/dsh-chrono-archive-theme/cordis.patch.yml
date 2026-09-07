@@ -1,0 +1,5 @@
+# dsh-chrono-archive-theme bundle patch
+# Mounts the Chrono Archive skin host half (routes/favicon/config endpoints).
+- insert:
+    - id: chrono-archive
+      name: 'dsh-chrono-archive-theme'

@@ -1,0 +1,21 @@
+{
+  "name": "dsh-profile-web",
+  "private": true,
+  "dependencies": {
+    "@liustack/modlens": "3.26.0",
+    "dsh-at-file": "https://github.com/FSMargoo/dsh-at-file/archive/refs/tags/v0.7.0.tar.gz",
+    "dsh-better-sidebar": "^0.18.0"
+  },
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "dsh-at-file",
+        "dsh-better-sidebar",
+        "@liustack/modlens"
+      ],
+      "patchReload": "live"
+    }
+  }
+}

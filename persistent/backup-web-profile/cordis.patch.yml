@@ -1,0 +1,74 @@
+# Your patch layer for this dsh profile, applied after every bundle layer:
+# a top-level YAML array of loader patch entries (id-targeted config
+# overrides, disables, and insert lists; `!!js` expressions allowed).
+#
+# MCP servers migrated from Codex (~/.codex/config.toml [mcp_servers.*]) so the
+# DSH Web profile can use them in every session. Tools appear as
+# `mcp__<serverName>__<tool>`. Disable a row (or delete the entries) to remove.
+# enquire reuses the existing Obsidian vault index (E:\ob仓库 + F:\enquire-mcp)
+# in place — no data was copied. notebooklm needs one interactive Google login
+# before its tools respond. node_repl is Codex-runtime-coupled: if it fails to
+# start, only its own tools are absent (failOnStartupError: false).
+- insert:
+    # Obsidian knowledge-base semantic search over E:\ob仓库 (existing index).
+    - id: mcp-enquire
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: enquire
+        transport: stdio
+        command: 'F:\nodejs\node-v24.20.0-win-x64\node.exe'
+        args:
+          - 'F:/npm-global/node_modules/@oomkapwn/enquire-mcp/dist/index.js'
+          - serve
+          - --vault
+          - 'E:/ob仓库'
+          - --persistent-index
+          - --index-file
+          - 'F:/enquire-mcp/149cc2c6d52e.fts5.db'
+          - --tokenize
+          - trigram
+        toolCallTimeoutMs: 180000
+        failOnStartupError: false
+
+    # Google NotebookLM MCP (needs one interactive login the first time).
+    - id: mcp-notebooklm
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: notebooklm
+        transport: stdio
+        command: 'F:\nodejs\node-v24.20.0-win-x64\node.exe'
+        args:
+          - 'F:\nodejs\node-v24.20.0-win-x64\node_modules\npm\bin\npx-cli.js'
+          - notebooklm-mcp@latest
+        toolCallTimeoutMs: 180000
+        failOnStartupError: false
+
+    # Codex runtime node_repl (node REPL / browser-use tooling). Env mirrors
+    # Codex minus the computer-use named pipe, which is Codex-app-only.
+    # DISABLED on 2026-09-07: its tools register, but every js call dies with
+    # "Cannot find module %TEMP%\.tmpXXX\kernel.js" — node_repl relies on a
+    # Codex-side sandbox that pre-stages a temp kernel, which DSH cannot
+    # provide. Re-enable only if that kernel mechanism becomes available.
+    - id: mcp-node-repl
+      name: '@deepseek-ai/dsh-mcp-client'
+      disabled: true
+      config:
+        serverName: node_repl
+        transport: stdio
+        command: 'C:\Users\DIY\AppData\Local\OpenAI\Codex\runtimes\cua_node\b474a88d5d105afa\bin\node_repl.exe'
+        args: []
+        env:
+          NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS: '1000'
+          NODE_REPL_NODE_MODULE_DIRS: 'C:\Users\DIY\AppData\Local\OpenAI\Codex\runtimes\cua_node\b474a88d5d105afa\bin\node_modules'
+          NODE_REPL_NODE_PATH: 'C:\Users\DIY\AppData\Local\OpenAI\Codex\runtimes\cua_node\b474a88d5d105afa\bin\node.exe'
+          NODE_REPL_TRUSTED_CODE_PATHS: 'C:\Users\DIY\.codex;C:\Users\DIY\AppData\Local\OpenAI\Codex\runtimes\cua_node\b474a88d5d105afa\bin\node_modules'
+          CODEX_HOME: 'C:\Users\DIY\.codex'
+          BROWSER_USE_AVAILABLE_BACKENDS: 'chrome,iab'
+          NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER: ''
+          NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME: ''
+          BROWSER_USE_CODEX_APP_BUILD_FLAVOR: prod
+          BROWSER_USE_CODEX_APP_VERSION: '26.901.51231'
+          NODE_REPL_TRUSTED_SERVICES: '{"browser":"C:/Users/DIY/.codex/plugins/cache/openai-bundled/browser/26.901.51231/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+          CODEX_CLI_PATH: 'C:\Users\DIY\AppData\Local\OpenAI\Codex\bin\8e5b6932251c2c1c\codex.exe'
+        toolCallTimeoutMs: 180000
+        failOnStartupError: false
