@@ -1,13 +1,11 @@
-// Chrono Archive · Host 半区（镜像文件；与 cordis_define code.host 完全一致）
-// 职责：读取 chrono-archive 工程配置、经官方 webServer 服务本地壁纸、
-//       在 index 注入原创 favicon/title。全部副作用随插件停止自动移除。
+// Chrono Archive · Host 半区（镜像文件；与 cordis_define code.host 一致）v5
+// - 新增「自设壁纸」：wallpaper-set / wallpaper-clear RPC + art/user.wall.txt 持久化
 return {
   apply(ctx) {
     const CHRONO_DIR = 'F:\\dsh试验工作区\\chrono-archive';
+    const OVERRIDE_FILE = CHRONO_DIR + '\\art\\user.wall.txt';
     const disposers = [];
     ctx.effect(() => () => { for (const d of disposers) { try { d(); } catch (_) {} } }, 'chrono-archive: host cleanup');
-
-    // ---------- 工具 ----------
     function readFileText(fs, path) {
       return fs.resolve(path).then((target) => fs.readText(target)).catch(() => null);
     }
@@ -33,10 +31,8 @@ return {
       return map;
     }
     function num(v, d) { const n = Number.parseFloat(v); return Number.isFinite(n) ? n : d; }
-
-    // ---------- 解析 wallpapers.txt ----------
     function parseWallpaperDoc(text) {
-      const settings = { pos: 'center 38%', size: 'cover', opacity: 0.5, blur: '3px', sat: 1, contrast: 1.02, cycleSeconds: 300, solidity: 0.8 };
+      const settings = { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 300, solidity: 0.72 };
       const walls = [];
       for (const line of parseLines(text)) {
         if (line.startsWith('@')) {
@@ -61,11 +57,8 @@ return {
       }
       return { settings, walls };
     }
-
-    // ---------- 启动时只做 favicon/title 注入（不依赖 fs 也行）----------
     const fs = ctx.get('fs');
     if (fs !== undefined) {
-      // favicon：读到 assets/favicon.svg → 以 base64 data URI 注入 <link>
       const favPath = CHRONO_DIR + '\\assets\\favicon.svg';
       readFileText(fs, favPath).then((svg) => {
         if (!svg) return;
@@ -85,48 +78,52 @@ return {
         } catch (err) { console.error('[chrono-archive] favicon inject failed', err && err.message); }
       });
     }
-
-    // ---------- 资产路由 + RPC（都需要 fs）----------
     if (fs === undefined) return;
     const webServer = ctx.get('webServer');
     if (webServer === undefined) return;
 
-    // 每次 config 请求都重新扫描清单与调色板（换壁纸无需重载插件）
     async function loadState() {
       const doc = await readFileText(fs, CHRONO_DIR + '\\wallpapers.txt');
       const parsed = parseWallpaperDoc(doc || '');
-      const walls = [];
-      for (let i = 0; i < parsed.walls.length; i++) {
-        const w = parsed.walls[i];
+      // 自设壁纸覆盖：art/user.wall.txt 若存在且可读，则只展示该张
+      let walls = parsed.walls.map((w, i) => ({ key: 'w' + i, file: w.path, pos: w.pos || '' }));
+      const overrideRaw = await readFileText(fs, OVERRIDE_FILE);
+      const overridePath = (overrideRaw || '').trim();
+      if (overridePath) {
         try {
-          const target = await fs.resolve(w.path);
+          const target = await fs.resolve(overridePath);
           const info = await fs.stat(target);
           if (info && info.type === 'file') {
-            walls.push({ key: 'w' + i, file: w.path, pos: w.pos || '' });
+            walls = [{ key: 'u0', file: overridePath, pos: '' }];
           }
-        } catch (_) { /* 文件不存在或不可读 → 跳过 */ }
+        } catch (_) { /* 不可读则回退默认清单 */ }
       }
-      // 调色板：默认 light/dark + 按壁纸名覆盖
+      // 校验默认清单每项
+      const valid = [];
+      for (const w of walls) {
+        try {
+          const target = await fs.resolve(w.file);
+          const info = await fs.stat(target);
+          if (info && info.type === 'file') valid.push(w);
+        } catch (_) { }
+      }
       const base = {
         light: parsePalette(await readFileText(fs, CHRONO_DIR + '\\palettes\\light.txt')),
         dark: parsePalette(await readFileText(fs, CHRONO_DIR + '\\palettes\\dark.txt')),
       };
-      for (const w of walls) {
+      for (const w of valid) {
         const name = w.file.replace(/\\/g, '/').split('/').pop().replace(/\.[^.]+$/, '');
         for (const scheme of ['light', 'dark']) {
           const extra = parsePalette(await readFileText(fs, CHRONO_DIR + '\\palettes\\' + name + '.' + scheme + '.txt'));
           for (const k of Object.keys(extra)) base[scheme][k] = extra[k];
         }
       }
-      return { parsed, walls, palettes: base };
+      return { parsed, walls: valid, palettes: base };
     }
-
-    let lastState = null;
-    let wallFiles = new Map(); // key -> { path, ext, mime }
+    let wallFiles = new Map();
     const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' };
     async function refreshState() {
       const st = await loadState();
-      lastState = st;
       wallFiles = new Map();
       for (const w of st.walls) {
         const ext = (w.file.match(/\.([a-zA-Z0-9]+)$/) || [])[1] || 'png';
@@ -134,12 +131,12 @@ return {
       }
       return st;
     }
+    const wallUrls = (st) => st.walls.map((w) => ({ key: w.key, url: '/chrono-assets/' + w.key + '.img', pos: w.pos }));
 
     disposers.push(harness.handle('chrono/config', async () => {
       try {
         const st = await refreshState();
-        const urls = st.walls.map((w) => ({ key: w.key, url: '/chrono-assets/' + w.key + '.img', pos: w.pos }));
-        return { ok: true, settings: st.parsed.settings, wallpapers: urls, palettes: st.palettes };
+        return { ok: true, settings: st.parsed.settings, wallpapers: wallUrls(st), palettes: st.palettes };
       } catch (err) {
         console.error('[chrono-archive] config failed', err && err.message);
         return { ok: false };
@@ -148,6 +145,32 @@ return {
     disposers.push(harness.handle('chrono/css', async () => {
       try { return { ok: true, css: await readFileText(fs, CHRONO_DIR + '\\skin.css') }; }
       catch (err) { return { ok: false }; }
+    }));
+    // 自设壁纸：写入 art/user.wall.txt（路径），下一轮 config 生效
+    disposers.push(harness.handle('chrono/wallpaper-set', async (args) => {
+      try {
+        const path = (args && typeof args.path === 'string' ? args.path.trim() : '');
+        if (!path) return { ok: false, error: 'empty path' };
+        const target = await fs.resolve(path);
+        const info = await fs.stat(target);
+        if (!info || info.type !== 'file') return { ok: false, error: 'not a file' };
+        const overrideTarget = await fs.resolve(OVERRIDE_FILE);
+        await fs.writeText(overrideTarget, path);
+        const st = await refreshState();
+        return { ok: true, wallpapers: wallUrls(st) };
+      } catch (err) {
+        return { ok: false, error: String((err && err.message) || err) };
+      }
+    }));
+    disposers.push(harness.handle('chrono/wallpaper-clear', async () => {
+      try {
+        const overrideTarget = await fs.resolve(OVERRIDE_FILE);
+        await fs.writeText(overrideTarget, '');
+        const st = await refreshState();
+        return { ok: true, wallpapers: wallUrls(st) };
+      } catch (err) {
+        return { ok: false, error: String((err && err.message) || err) };
+      }
     }));
 
     disposers.push(webServer.register({

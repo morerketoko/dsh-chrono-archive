@@ -310,6 +310,31 @@ body {
   }
 }
 
+/* 更换壁纸控件 */
+.chrono-wall-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.chrono-wall-input {
+  min-width: min(320px, 60%);
+  flex: 1 1 220px;
+  font-size: 12px;
+  color: var(--chrono-ink);
+  background: var(--chrono-code-inline, rgba(0, 0, 0, 0.06));
+  border: 0.5px solid color-mix(in srgb, var(--chrono-ink-muted) 40%, transparent);
+  border-radius: 6px;
+  padding: 7px 10px;
+  outline: none;
+}
+.chrono-wall-input:focus {
+  border-color: color-mix(in srgb, var(--chrono-accent-soft) 70%, transparent);
+}
+.chrono-wall-input::placeholder {
+  color: var(--chrono-ink-muted);
+}
+
 /* ---------- 7. 动效克制 ---------- */
 @media (prefers-reduced-motion: reduce) {
   body::before,
