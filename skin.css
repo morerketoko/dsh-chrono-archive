@@ -345,3 +345,37 @@ body {
     animation: none;
   }
 }
+
+/* 黑金面板控件专属高对比文字（固定出现于深色金边面板，与浅/深外观无关） */
+.chrono-preset-title {
+  color: #F6ECD6;
+}
+.chrono-preset-desc {
+  color: #D6C69C;
+}
+.chrono-preset-chip {
+  color: #F1E5C2;
+  background: rgba(201, 162, 75, 0.08);
+  border-color: rgba(201, 162, 75, 0.55);
+}
+.chrono-preset-chip:hover {
+  color: #FCEBB0;
+  background: rgba(201, 162, 75, 0.16);
+  border-color: rgba(227, 196, 103, 0.85);
+}
+.chrono-preset-chip[data-active="true"] {
+  color: #22190C;
+  background: rgba(214, 178, 92, 0.92);
+  border-color: #EACF8B;
+}
+.chrono-wall-input {
+  color: #F6EFDC;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(201, 162, 75, 0.5);
+}
+.chrono-wall-input::placeholder {
+  color: #AB9E78;
+}
+.chrono-wall-input:focus {
+  border-color: #EACF8B;
+}
