@@ -1,5 +1,8 @@
 # Chrono Archive · 时序档案馆
 
+> GitHub 公开仓库：**[morerketoko/dsh-chrono-archive](https://github.com/morerketoko/dsh-chrono-archive)**
+> topics：`dsh · deepseek-harness · plugin · theme · ui-skin · web-ui`
+
 为 DeepSeek Harness Web UI 打造的原创复古时序皮肤插件。
 视觉语言：复古时代感 × 超现实档案馆 × 老式印刷物 × 优雅现代 UI ——
 灵感来自《重返未来：1999》的氛围，但**不含任何官方素材**（原创印章/字标/调色板）。
@@ -37,7 +40,7 @@ chrono-archive/
 @contrast 1.02      # 对比度
 @size cover         # 尺寸策略
 @cycle 300          # 轮换间隔秒；0 = 固定单张
-@solidity 0.8       # 界面底色不透明度（0.5 更透 → 1.0 更实）
+@solidity 0.66      # 界面底色不透明度（0.45 更透 → 1.0 更实）
 
 D:\wallpapers\one.png                 # 需复制进 art/ 或工作区可读位置
 art\two.png :: right center           # 该张单独定位
