@@ -5,6 +5,7 @@ window.__ModuleLoader__.load({
 		var exports = module.exports;
 		Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 		const React = require("react");
+		console.log('[chrono-archive-theme] module factory loaded');
 		const FALLBACK_LIGHT = { canvas: '#E6DBC2', base: '#DDD1B6', raised: '#EAE0C8', overlayBg: '#F3ECD9', ink: '#2E271C', inkSoft: '#4C4132', inkMuted: '#6B5E49', accent: '#967429', accentSoft: '#B78F3E', accentPale: '#D9BC72', wine: '#7E3F34', pine: '#4D6A54', slate: '#4F5E70', link: '#42577C', success: '#51744F', warn: '#8F6F28', danger: '#984439', codeBg: '#EDE2C9', codeBanner: '#E2D5B8', codeInline: '#F3EBD7', selection: '#D0B67A' };
 		const FALLBACK_DARK = { canvas: '#101319', base: '#161A22', raised: '#1D232D', overlayBg: '#1B212B', ink: '#EAE2CE', inkSoft: '#C7BFA9', inkMuted: '#A49B86', accent: '#C9A24B', accentSoft: '#DFBE6E', accentPale: '#EAD08F', wine: '#A05244', pine: '#6E8D72', slate: '#7E93A8', link: '#A9BFE0', success: '#83A987', warn: '#D9AF5E', danger: '#C96B5B', codeBg: '#0F141C', codeBanner: '#171E29', codeInline: '#232B37', selection: '#8A6F2F' };
 		const ARCH_PAPER = '#F6EED9';
@@ -184,10 +185,13 @@ window.__ModuleLoader__.load({
 			return () => { try { tag.remove(); } catch (_) {} };
 		}
 		async function apply(ctx) {
+			console.log('[chrono-archive-theme] apply called');
+			await new Promise((resolveInject) => { try { ctx.inject(['slots', 'theme', 'timer'], () => resolveInject()); } catch (_) { resolveInject(); } });
 			const slots = ctx.get('slots');
 			const theme = ctx.get('theme');
 			const timer = ctx.get('timer');
-			if (slots === undefined || theme === undefined || timer === undefined) return;
+			console.log('[chrono-archive-theme] services ready', { s: !!slots, t: !!theme, ti: !!timer });
+			if (slots === undefined || theme === undefined || timer === undefined) { console.error('[chrono-archive-theme] missing services'); return; }
 			let latestDispose = null;
 			let intervalDispose = null;
 			let alive = true;
