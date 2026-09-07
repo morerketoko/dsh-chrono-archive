@@ -1,0 +1,23 @@
+# Chrono Archive · Dark palette（时序档案馆·深色 / 深蓝黑·墨灰·深酒红·暗金·灰蓝）
+# 格式：key: #hex   —— 与浅色分别调校，不是简单反色。
+canvas: #101319
+base: #161A22
+raised: #1D232D
+overlayBg: #1B212B
+ink: #EAE2CE
+inkSoft: #BCB39D
+inkMuted: #8F8673
+accent: #C9A24B
+accentSoft: #DFBE6E
+accentPale: #EAD08F
+wine: #A05244
+pine: #6E8D72
+slate: #7E93A8
+link: #A9BFE0
+success: #83A987
+warn: #D9AF5E
+danger: #C96B5B
+codeBg: #0F141C
+codeBanner: #171E29
+codeInline: #232B37
+selection: #8A6F2F

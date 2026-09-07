@@ -1,0 +1,267 @@
+/* =============================================================
+   Chrono Archive · 时序档案馆 —— DSH Web 皮肤层
+   -------------------------------------------------------------
+   本文件由插件通过官方 styles.insert() 注入，随插件卸载自动移除。
+   作用域约定：
+     - 只触碰 body/html/pseudo、全局 ::selection/::-webkit-scrollbar
+       与 .chrono-* 自有装饰类；
+     - 颜色全部消费 --chrono-* 语义变量（由 theme.overrideTokens
+       按 light/dark 写入 body inline，自动随主题切换）；
+     - 不引用任何 DSH 组件 hash 类名。
+   ============================================================= */
+
+/* ---------- 1. 画布底色与文本基底 ---------- */
+html {
+  background-color: var(--chrono-canvas, #101319);
+}
+body {
+  background-color: var(--chrono-canvas, #101319);
+  color: var(--chrono-ink, #EAE2CE);
+}
+
+/* ---------- 2. 壁纸背板（两层，支持交叉淡入轮换） ---------- */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -80px;                 /* 为模糊/边角留出出血 */
+  z-index: -2;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: var(--chrono-pos, center 38%), center, center;
+  background-size: var(--chrono-bg-size, cover), cover, cover;
+  will-change: opacity;
+  transition: opacity var(--chrono-fade, 1.4s) ease;
+}
+/* 背景栈：壁纸在最底 → 档案 wash 压暗（轻）→ 极轻暗角 */
+body::before {
+  background-image:
+    radial-gradient(130% 100% at 50% 0%, transparent 64%, color-mix(in srgb, var(--chrono-ink, #000) 8%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 32%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 48%, transparent)),
+    var(--chrono-art-a, none);
+  opacity: var(--chrono-op-a, 0);
+  filter: blur(var(--chrono-blur, 3px)) saturate(var(--chrono-sat, 1)) contrast(var(--chrono-contrast, 1.02));
+}
+body::after {
+  background-image:
+    radial-gradient(130% 100% at 50% 0%, transparent 64%, color-mix(in srgb, var(--chrono-ink, #000) 8%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 32%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 48%, transparent)),
+    var(--chrono-art-b, none);
+  opacity: var(--chrono-op-b, 0);
+  filter: blur(var(--chrono-blur, 3px)) saturate(var(--chrono-sat, 1)) contrast(var(--chrono-contrast, 1.02));
+}
+
+/* ---------- 3. 档案字体编排 ----------
+   标题/印刷物走衬线（拉丁 Georgia + 中文明朝/宋体系），
+   正文与界面仍保持系统无衬线，代码保持等宽。 */
+body {
+  --chrono-serif: Georgia, "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --chrono-editorial: "Times New Roman", Georgia, "Songti SC", "Noto Serif SC", serif;
+  --dsw-font-markdown-h1-font-family: var(--chrono-serif);
+  --dsw-font-markdown-h2-font-family: var(--chrono-serif);
+  --dsw-font-markdown-h3-font-family: var(--chrono-serif);
+  --dsw-font-markdown-h4-font-family: var(--chrono-serif);
+  --dsw-font-markdown-h1: 700 calc(21px + var(--dsh-content-font-delta, 0px)) / calc(30px + var(--dsh-content-font-delta, 0px)) var(--chrono-serif);
+  --dsw-font-markdown-h2: 700 calc(19px + var(--dsh-content-font-delta, 0px)) / calc(28px + var(--dsh-content-font-delta, 0px)) var(--chrono-serif);
+  --dsw-font-markdown-h3: 600 calc(17px + var(--dsh-content-font-delta, 0px)) / calc(26px + var(--dsh-content-font-delta, 0px)) var(--chrono-serif);
+  --dsw-font-markdown-h4: 600 calc(15px + var(--dsh-content-font-delta, 0px)) / calc(24px + var(--dsh-content-font-delta, 0px)) var(--chrono-serif);
+  --dsw-font-markdown-h5: 600 calc(14px + var(--dsh-content-font-delta, 0px)) / calc(22px + var(--dsh-content-font-delta, 0px)) var(--chrono-serif);
+  --dsw-font-markdown-h6: 600 calc(13px + var(--dsh-content-font-delta, 0px)) / calc(20px + var(--dsh-content-font-delta, 0px)) var(--chrono-serif);
+}
+
+/* 语法高亮改为档案色板（常量经 --chrono-* 随深浅切换） */
+body {
+  --shiki-foreground: var(--chrono-ink);
+  --shiki-background: var(--chrono-code-bg);
+  --shiki-token-keyword: var(--chrono-wine);
+  --shiki-token-string: var(--chrono-pine);
+  --shiki-token-string-expression: var(--chrono-pine);
+  --shiki-token-comment: var(--chrono-ink-muted);
+  --shiki-token-constant: var(--chrono-accent-soft);
+  --shiki-token-function: var(--chrono-slate);
+  --shiki-token-parameter: var(--chrono-warn);
+  --shiki-token-punctuation: var(--chrono-ink-muted);
+  --shiki-token-link: var(--chrono-link);
+}
+
+/* ---------- 4. 滚动条：细、低对比、hover 显形 ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--chrono-ink-muted, #8F8673) 34%, transparent);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--chrono-accent-soft, #C9A24B) 55%, transparent);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+@supports not selector(::-webkit-scrollbar) {
+  body,
+  body * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--chrono-ink-muted) 40%, transparent) transparent;
+  }
+}
+
+/* ---------- 5. 选区 / 印刷标记 ---------- */
+::selection {
+  background: color-mix(in srgb, var(--chrono-selection, #C9A24B) 45%, transparent);
+  color: var(--chrono-ink);
+}
+
+/* ---------- 6. 自有装饰组件（.chrono-*，scoped） ---------- */
+
+/* 6.1 Sidebar 印章 / 字标 */
+.chrono-seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--chrono-accent-soft, #C9A24B);
+}
+.chrono-seal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.chrono-wordmark {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+.chrono-wordmark-en {
+  font-family: var(--chrono-editorial);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--chrono-ink, #EAE2CE);
+  white-space: nowrap;
+}
+.chrono-wordmark-zh {
+  font-family: var(--chrono-serif);
+  font-size: 9px;
+  letter-spacing: 0.42em;
+  color: var(--chrono-accent-soft, #C9A24B);
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.chrono-wordmark-sub {
+  font-family: var(--chrono-serif);
+  font-size: 8px;
+  letter-spacing: 0.24em;
+  color: var(--chrono-ink-muted, #8F8673);
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+/* 6.2 空状态（档案首页）标记 */
+.chrono-hero-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--chrono-accent-soft, #C9A24B);
+  filter: drop-shadow(0 1px 1px color-mix(in srgb, var(--chrono-ink) 24%, transparent));
+}
+.chrono-hero-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 6.3 Composer 下方装饰行 */
+.chrono-dock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.62;
+  padding: 2px 0 6px;
+}
+.chrono-dock::before,
+.chrono-dock::after {
+  content: "";
+  height: 0;
+  border-top: 0.5px solid color-mix(in srgb, var(--chrono-accent-soft, #C9A24B) 42%, transparent);
+  width: clamp(24px, 9vw, 88px);
+}
+.chrono-dock-label {
+  font-family: var(--chrono-editorial);
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--chrono-ink-muted, #8F8673);
+  white-space: nowrap;
+}
+.chrono-dock-label b {
+  font-weight: 600;
+  color: var(--chrono-accent-soft, #C9A24B);
+}
+
+/* 6.4 全局氛围层（shell.overlay，点击穿透） */
+.chrono-ambience {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.chrono-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+}
+.chrono-ambient-glow {
+  position: absolute;
+  inset: -30%;
+  opacity: 0.05;
+  background:
+    radial-gradient(38% 30% at 22% 8%, var(--chrono-accent-soft, #C9A24B), transparent 70%),
+    radial-gradient(42% 34% at 84% 90%, color-mix(in srgb, var(--chrono-wine, #A05244) 70%, transparent), transparent 70%);
+  animation: chrono-breathe 46s ease-in-out infinite alternate;
+}
+@keyframes chrono-breathe {
+  from { transform: translate3d(-1.2%, -0.6%, 0) scale(1); }
+  to   { transform: translate3d(1.4%, 1%, 0) scale(1.04); }
+}
+
+/* 6.5 设置行信息 */
+.chrono-skin-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.4;
+}
+.chrono-skin-row-title {
+  font-family: var(--chrono-editorial);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--chrono-ink);
+}
+.chrono-skin-row-sub {
+  font-size: 11px;
+  color: var(--chrono-ink-muted);
+}
+
+/* ---------- 7. 动效克制 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    transition: none;
+  }
+  .chrono-ambient-glow {
+    animation: none;
+  }
+}

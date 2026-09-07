@@ -1,0 +1,26 @@
+# Chrono Archive · 壁纸清单示例（复制为 wallpapers.txt 使用）
+# ------------------------------------------------------------------
+# 语法：
+#   1) 以 # 开头 = 注释
+#   2) 以 @ 开头 = 全局指令（作用于所有壁纸）
+#       @pos <x> <y>       背景定位，如 center 38% / right center / 50% 35%
+#       @opacity 0.5       壁纸整体不透明度 0.0 ~ 1.0（建议 0.38 ~ 0.55）
+#       @blur 3px          壁纸模糊 0 ~ 8px（建议 2 ~ 6px）
+#       @sat 1.0           饱和度倍率
+#       @contrast 1.02     对比度倍率
+#       @size cover        尺寸：cover | contain
+#       @cycle 300         轮换间隔（秒），0 = 单张不轮换
+#       @solidity 0.8      界面底色不透明度（0.5 更透 → 1.0 更实）
+#   3) 其余行 = 壁纸路径（把图片放进本目录 art/），可选 ` :: 定位` 覆盖定位
+# 动态插件 Host 的 fs 只能读其工作区；外部盘符路径会被跳过。
+@pos center 38%
+@opacity 0.5
+@blur 3px
+@sat 1.0
+@contrast 1.02
+@size cover
+@cycle 300
+@solidity 0.8
+
+art/your-wallpaper-1.png :: center 40%
+art/your-wallpaper-2.png :: right center
