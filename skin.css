@@ -379,3 +379,15 @@ body {
 .chrono-wall-input:focus {
   border-color: #EACF8B;
 }
+
+/* Rail 补充：设置面板内卡片还可能消费的浅 surface token，一律并入黑金层 */
+.pI_x6G_sidebarCol {
+  --dsw-alias-bg-module-platform: #232833;
+  --dsw-alias-bg-layer-4: #2A303B;
+  --dsw-specific-tip: #232833;
+  --dsw-specific-bubble: #232833;
+  --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.22);
+  --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.34);
+  --dsw-alias-bg-mask-drop: rgba(0, 0, 0, 0.5);
+  --dsw-alias-state-warn-label: #F3EAD5;
+}
