@@ -1,24 +1,24 @@
 # Chrono Archive · Light palette（时序档案馆·浅色 / 旧纸·米白·暖灰·铜金·酒红·墨绿）
 # 格式：key: #hex   —— 语义键驱动整套 --dsw-* token，改这里即改全主题。
 # 可选壁纸专属覆盖：将本文件复制为 palettes/<壁纸文件名>.light.txt，只写要覆盖的键。
-canvas: #F1EBDB
-base: #EBE2CD
-raised: #F7F1E1
-overlayBg: #FDFAF0
-ink: #32291E
-inkSoft: #57493A
-inkMuted: #776851
-accent: #9B7830
-accentSoft: #BE9443
-accentPale: #E7CA7C
-wine: #8A4438
-pine: #52705A
-slate: #526173
-link: #4A5F86
-success: #55785A
-warn: #9A7A2E
-danger: #A3483C
-codeBg: #F5EEDD
-codeBanner: #EEE5CC
-codeInline: #FAF4E6
-selection: #DDC48E
+canvas: #E6DBC2
+base: #DDD1B6
+raised: #EAE0C8
+overlayBg: #F3ECD9
+ink: #2E271C
+inkSoft: #4C4132
+inkMuted: #6B5E49
+accent: #967429
+accentSoft: #B78F3E
+accentPale: #D9BC72
+wine: #7E3F34
+pine: #4D6A54
+slate: #4F5E70
+link: #42577C
+success: #51744F
+warn: #8F6F28
+danger: #984439
+codeBg: #EDE2C9
+codeBanner: #E2D5B8
+codeInline: #F3EBD7
+selection: #D0B67A
