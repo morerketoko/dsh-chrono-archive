@@ -239,6 +239,11 @@ window.__ModuleLoader__.load({
 			slots.inject('conversation.composer.dock', () => slots.register({ name: 'conversation.composer.dock', id: 'chrono-archive', order: 30 }, ChronoDock));
 			slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'chrono-archive', order: 90 }, ChronoAmbience));
 			styleCleanups.push(insertStyle(RAIL_GOLD));
+			// 立即按内置调色板应用一次（不等异步配置），保证默认即有主题
+			try {
+				latestDispose = theme.overrideTokens('chrono-archive', composeOverrideMap(schemeTokens(baseLight, settings, false), schemeTokens(baseDark, settings, true)));
+				console.log('[chrono-archive-theme] default tokens applied');
+			} catch (e) { console.error('[chrono-archive-theme] default apply failed', e && e.message); }
 			ctx.effect(() => () => {
 				alive = false;
 				try { if (latestDispose) latestDispose(); } catch (_) {}
@@ -261,7 +266,7 @@ window.__ModuleLoader__.load({
 				if (walls.length > 1 && secs >= 5 && timer) {
 					intervalDispose = timer.interval(() => { if (alive) advance(); }, secs * 1000);
 				}
-			} catch (_) { /* rail-only fallback */ }
+			} catch (e) { console.error('[chrono-archive-theme] bootstrap failed', e && e.message); }
 		}
 		exports.apply = apply;
 		exports.inject = [];

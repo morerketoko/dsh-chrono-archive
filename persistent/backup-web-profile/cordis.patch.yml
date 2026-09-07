@@ -72,3 +72,9 @@
           CODEX_CLI_PATH: 'C:\Users\DIY\AppData\Local\OpenAI\Codex\bin\8e5b6932251c2c1c\codex.exe'
         toolCallTimeoutMs: 180000
         failOnStartupError: false
+
+# Chrono Archive persistent skin host half
+- insert:
+    - id: chrono-archive
+      name: 'dsh-chrono-archive-theme'
+
