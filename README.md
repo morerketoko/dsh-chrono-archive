@@ -1,58 +1,104 @@
-﻿# Chrono Archive 路 鏃跺簭妗ｆ棣?
-> GitHub 鍏紑浠撳簱锛?*[morerketoko/dsh-chrono-archive](https://github.com/morerketoko/dsh-chrono-archive)**
-> topics锛歚dsh 路 deepseek-harness 路 plugin 路 theme 路 ui-skin 路 web-ui`
+# Chrono Archive · 时序档案馆
 
-涓?DeepSeek Harness Web UI 鎵撻€犵殑鍘熷垱澶嶅彜鏃跺簭鐨偆鎻掍欢銆?瑙嗚璇█锛氬鍙ゆ椂浠ｆ劅 脳 瓒呯幇瀹炴。妗堥 脳 鑰佸紡鍗板埛鐗?脳 浼橀泤鐜颁唬 UI 鈥斺€?鐏垫劅鏉ヨ嚜銆婇噸杩旀湭鏉ワ細1999銆嬬殑姘涘洿锛屼絾**涓嶅惈浠讳綍瀹樻柟绱犳潗**锛堝師鍒涘嵃绔?瀛楁爣/璋冭壊鏉匡級銆?
-- 鎻掍欢绫诲瀷锛欴SH 鍔ㄦ€?Cordis Plugin锛圚ost + Client锛夛紝瀹樻柟鏈哄埗锛岄浂鏍稿績淇敼
-- 骞冲彴/鐗堟湰锛欴eepSeek Harness Web 0.1.2-rc.1锛坵eb profile 缁勫悎锛?- 鍗歌浇鍗虫仮澶嶉粯璁や富棰橈紙token 灞?/ 鏍峰紡 / 鎻掓Ы / 璺敱鍏ㄩ儴闅?Run 绉婚櫎锛?
-## 鐩綍缁撴瀯
+![Chrono Archive Poster](./poster.png)
+
+> GitHub 公开仓库：**[morerketoko/dsh-chrono-archive](https://github.com/morerketoko/dsh-chrono-archive)**
+> topics：`dsh · deepseek-harness · plugin · theme · ui-skin · web-ui`
+
+为 DeepSeek Harness Web UI 打造的原创复古时序皮肤插件。
+视觉语言：复古时代感 × 超现实档案馆 × 老式印刷物 × 优雅现代 UI ——
+灵感来自《重返未来：1999》的氛围，但**不含任何官方素材**（原创印章/字标/调色板）。
+
+- 插件类型：DSH 动态 Cordis Plugin（Host + Client），官方机制，零核心修改
+- 平台/版本：DeepSeek Harness Web 0.1.2-rc.1（web profile 组合）
+- 卸载即恢复默认主题（token 层 / 样式 / 插槽 / 路由全部随 Run 移除）
+
+## 目录结构
 
 ```
 chrono-archive/
-鈹溾攢 wallpapers.txt            鈽?杩愯鏃跺敮涓€鎹㈠浘鍏ュ彛锛堟竻鍗?+ @鍏ㄥ眬鍙傛暟锛?鈹溾攢 art/                      鍐呯疆澹佺焊鍓湰锛堟彃浠?fs 鍙鑼冨洿 = 褰撳墠宸ヤ綔鍖猴級
-鈹溾攢 skin.css                  鐨偆鏍峰紡锛堝绾稿眰/妗ｆ瀛椾綋/婊氬姩鏉?瑁呴グ绫伙級
-鈹溾攢 palettes/
-鈹? 鈹溾攢 light.txt              娴呰壊璇箟璋冭壊鏉匡紙key: #hex锛?鈹? 鈹溾攢 dark.txt               娣辫壊璇箟璋冭壊鏉匡紙涓庢祬鑹插垎鍒皟鏍★級
-鈹? 鈹斺攢 <澹佺焊鍚?.light.txt     鍙€夛細鎸夊绾歌鐩栬皟鑹叉澘锛堟棤闇€寤哄垯蹇界暐锛?鈹溾攢 assets/favicon.svg        鍘熷垱鍗扮珷 favicon
-鈹斺攢 plugin/
-   鈹溾攢 host-body.js           Host 鍗婂尯婧愮爜闀滃儚锛? pkg-2 code.host锛?   鈹斺攢 client-body.js         Client 鍗婂尯婧愮爜闀滃儚锛? pkg-2 code.client锛?```
-
-## 鎹㈠绾革紙鍙敼涓€涓枃浠讹級
-
-缂栬緫 `wallpapers.txt`锛?
-```ini
-@pos center 38%     # 鑳屾櫙瀹氫綅
-@opacity 0.68       # 澹佺焊涓嶉€忔槑搴︼紙0.5 娣?鈫?0.8 鏄庢樉锛?@blur 0px           # 鑳屾櫙妯＄硦锛? = 娓呮櫚锛涢渶瑕佹煍鍖栧啀缁?2~4px锛?@sat 1.05           # 楗卞拰搴?@contrast 1.02      # 瀵规瘮搴?@size cover         # 灏哄绛栫暐
-@cycle 300          # 杞崲闂撮殧绉掞紱0 = 鍥哄畾鍗曞紶
-@solidity 0.66      # 鐣岄潰搴曡壊涓嶉€忔槑搴︼紙0.45 鏇撮€?鈫?1.0 鏇村疄锛?
-D:\wallpapers\one.png                 # 闇€澶嶅埗杩?art/ 鎴栧伐浣滃尯鍙浣嶇疆
-art\two.png :: right center           # 璇ュ紶鍗曠嫭瀹氫綅
+├─ wallpapers.txt            ★ 运行时唯一换图入口（清单 + @全局参数）
+├─ art/                      内置壁纸副本（插件 fs 可读范围 = 当前工作区）
+├─ skin.css                  皮肤样式（壁纸层/档案字体/滚动条/装饰类）
+├─ palettes/
+│  ├─ light.txt              浅色语义调色板（key: #hex）
+│  ├─ dark.txt               深色语义调色板（与浅色分别调校）
+│  └─ <壁纸名>.light.txt     可选：按壁纸覆盖调色板（无需建则忽略）
+├─ assets/favicon.svg        原创印章 favicon
+└─ plugin/
+   ├─ host-body.js           Host 半区源码镜像（= pkg-2 code.host）
+   └─ client-body.js         Client 半区源码镜像（= pkg-2 code.client）
 ```
 
-- 澶氳 = 澶氬绾歌疆鎹紱绌烘枃浠?鍏ㄩ儴缂哄け = 鍥為€€绾壊妗ｆ搴曘€?- **娌欑娉ㄦ剰**锛氬姩鎬佹彃浠?Host 鍙兘璇诲綋鍓嶅伐浣滃尯锛坄F:\dsh璇曢獙宸ヤ綔鍖篳锛夛紱澶栭儴鐩樼
-  璺緞浼氳璺宠繃銆傝鎶婂浘鐗囨斁杩?`art/`锛堟垨宸ヤ綔鍖轰换鎰忚矾寰勶級锛屽啀鍦ㄦ竻鍗曢噷寮曠敤瀹冦€?- 鎹㈠绾告棤闇€鏀瑰姩浠讳綍 CSS/浠ｇ爜锛涢噸鍚彃浠讹紙stop 鈫?run锛夋垨绛夊緟杞崲鍛ㄦ湡鐢熸晥銆?- 浣嶇疆鎰熺煡锛歚backgroundPositionX/Y/Scale` 缁?`@pos` 涓庤鍐?`:: 瀹氫綅` 鎺у埗锛?  閬垮厤浜虹墿鑴搁儴 / 涓讳綋寤虹瓚琚?sidebar / composer 閬尅锛堜緥濡?`right center`銆乣center 42%`锛夈€?
-## 璋冭壊鏉匡紙鑷姩娲剧敓鏁村 --dsw-* token锛?
-`palettes/light.txt` 涓?`dark.txt` 鏄袱濂?*鐙珛璋冩牎**鐨勮涔夎壊鏉?锛堟祬鑹诧細鏃х焊/绫崇櫧/鏆栫伆/娣辨/閾滈噾/閰掔孩/澧ㄧ豢锛涙繁鑹诧細娣辫摑榛?澧ㄧ伆/鏆楅噾/鐏拌摑锛夈€?姣忎釜璇箟閿細娲剧敓 ~70 涓?DSH `--dsw-alias-* / --dsw-specific-*` 鍙?`--chrono-*`
-token锛屾棤闇€鎵嬪伐缁存姢鍑犲崄涓?CSS 棰滆壊銆?缁欐煇寮犲绾镐笓灞為厤鑹诧細澶嶅埗涓?`palettes/<澹佺焊鏂囦欢鍚?.light.txt`锛屽彧鍐欒瑕嗙洊鐨勯敭鍗冲彲銆?
-## 鐨偆棰勮锛堟彃浠惰缃〉涓€閿垏鎹級
+## 换壁纸（只改一个文件）
 
-鐨偆杩愯鏃舵彁渚?**4 涓川鎰熺骇棰勮**锛屽叆鍙ｅ湪锛氳缃?鈫?General锛圕HRONO ARCHIVE 琛岋級锛?
-| 棰勮 | 搴曡壊璐ㄦ劅 | 渚ф爮 | 璇存槑 |
+编辑 `wallpapers.txt`：
+
+```ini
+@pos center 38%     # 背景定位
+@opacity 0.68       # 壁纸不透明度（0.5 淡 → 0.8 明显）
+@blur 0px           # 背景模糊（0 = 清晰；需要柔化再给 2~4px）
+@sat 1.05           # 饱和度
+@contrast 1.02      # 对比度
+@size cover         # 尺寸策略
+@cycle 300          # 轮换间隔秒；0 = 固定单张
+@solidity 0.66      # 界面底色不透明度（0.45 更透 → 1.0 更实）
+
+D:\wallpapers\one.png                 # 需复制进 art/ 或工作区可读位置
+art\two.png :: right center           # 该张单独定位
+```
+
+- 多行 = 多壁纸轮换；空文件/全部缺失 = 回退纯色档案底。
+- **沙箱注意**：动态插件 Host 只能读当前工作区（`F:\dsh试验工作区`）；外部盘符
+  路径会被跳过。请把图片放进 `art/`（或工作区任意路径），再在清单里引用它。
+- 换壁纸无需改动任何 CSS/代码；重启插件（stop → run）或等待轮换周期生效。
+- 位置感知：`backgroundPositionX/Y/Scale` 经 `@pos` 与行内 `:: 定位` 控制，
+  避免人物脸部 / 主体建筑被 sidebar / composer 遮挡（例如 `right center`、`center 42%`）。
+
+## 调色板（自动派生整套 --dsw-* token）
+
+`palettes/light.txt` 与 `dark.txt` 是两套**独立调校**的语义色板
+（浅色：旧纸/米白/暖灰/深棕/铜金/酒红/墨绿；深色：深蓝黑/墨灰/暗金/灰蓝）。
+每个语义键会派生 ~70 个 DSH `--dsw-alias-* / --dsw-specific-*` 及 `--chrono-*`
+token，无需手工维护几十个 CSS 颜色。
+给某张壁纸专属配色：复制为 `palettes/<壁纸文件名>.light.txt`，只写要覆盖的键即可。
+
+## 皮肤预设（插件设置页一键切换）
+
+皮肤运行时提供 **4 个质感级预设**，入口在：设置 → General（CHRONO ARCHIVE 行）：
+
+| 预设 | 底色质感 | 侧栏 | 说明 |
 | --- | --- | --- | --- |
-| 浜焊 路 Bright锛堥粯璁わ級 | 楂樹寒鏆栫焊 | 榛戦噾妗ｆ鏌?| 銆屽垰鎵嶇殑璐ㄦ劅銆?|
-| 鏃х焊 路 Parchment | 浣庢洕鏃х焊 | 榛戦噾妗ｆ鏌?| 娣变竴妗ｇ殑妗ｆ鍐岃川鎰?|
-| 鏆栫焊 路 Warm | 鏆栫焊 | 鍗婇€忔槑鏆栦晶鏍?| 鏇磋交鐨勬。妗堟劅 |
-| 瀹夐潤 路 Quiet | 鏆栫焊 | 鍗婇€忔槑鏆栦晶鏍?| 澹佺焊娣℃煍锛屼笓娉ㄩ槄璇?|
+| 亮纸 · Bright（默认） | 高亮暖纸 | 黑金档案柜 | 「刚才的质感」 |
+| 旧纸 · Parchment | 低曝旧纸 | 黑金档案柜 | 深一档的档案册质感 |
+| 暖纸 · Warm | 暖纸 | 半透明暖侧栏 | 更轻的档案感 |
+| 安静 · Quiet | 暖纸 | 半透明暖侧栏 | 壁纸淡柔，专注阅读 |
 
-- 鍒囨崲绔嬪嵆鐢熸晥锛涘嵏杞芥彃浠跺嵆鎭㈠ DSH 榛樿澶栬銆?- 榛戦噾渚ф爮浼氭妸渚ф爮鍐呰〃闈紙鍚缃潰鏉匡級涓€骞跺帇鎴愰粦閲戝簳锛屼繚璇佹祬閲戞枃瀛楀姣斻€?- 娣辫壊妯″紡涓嬪崱鐗?鍩哄簳琛ㄩ潰鏇村疄鏇存殫锛岄伩鍏嶄寒鎰熻创瀛椼€?
-## 鍦ㄨ缃〉鏇存崲鏈満澹佺焊
+- 切换立即生效；卸载插件即恢复 DSH 默认外观。
+- 黑金侧栏会把侧栏内表面（含设置面板）一并压成黑金底，保证浅金文字对比。
+- 深色模式下卡片/基底表面更实更暗，避免亮感贴字。
 
-鍚屼竴琛屾帶浠跺唴鎻愪緵銆屾洿鎹㈡湰鏈哄绾搞€嶏細绮樿创鍥剧墖缁濆璺緞 鈫?璁句负澹佺焊锛?鎴栫偣銆屾仮澶嶉粯璁ら泦銆嶅洖鍒?`wallpapers.txt` 娓呭崟銆?- 鑷缁撴灉鎸佷箙鍖栦簬 `art/user.wall.txt`锛堜笉鍏ュ簱锛夛紝閲嶅惎鍚庝粛鐢熸晥锛?- 鍙楁彃浠?fs 娌欑闄愬埗锛氳矾寰勯渶浣嶄簬褰撳墠宸ヤ綔鍖猴紙濡傛斁杩?`art/` 鍚庡～璇ヨ矾寰勶級锛?  澶栭儴鐩樼浼氭彁绀轰笉鍙銆?
-## 瀹夎 / 鍗歌浇锛堝綋鍓嶄細璇濓級
+## 在设置页更换本机壁纸
 
-- 瀹夎锛氬湪瀵硅瘽涓?`cordis_run` 婵€娲?`chroa-1`锛堝綋鍓?Package `pkg-2`锛涢娆￠渶鍦?Run 鍗℃壒鍑嗭級銆?- 鍗歌浇鎭㈠榛樿锛歚cordis_stop(chroa-1)` 鎴?`cordis_undefine(chroa-1)`銆?
-## 閲嶆柊鏋勫缓 / 鎸佷箙鍖栬鏄?
-鏈彃浠舵槸**鍔ㄦ€佹彃浠?*锛堥殢杩涚▼瀛樺湪锛屾寜浼氳瘽绠＄悊锛夈€傚闇€鍦?DSH 閲嶅惎鍚庝粛鍔犺浇锛?鎶?`plugin/host-body.js` 涓?`plugin/client-body.js` 灏佽涓哄父瑙?client 妯″潡鍖?锛堝彲鍙傝€?`dsh-better-sidebar` 鐨?profile bundle 鏂瑰紡锛夆€斺€旀湰鐗堜笉淇敼 profile 缁勫悎銆?
-## 宸茬煡闄愬埗
+同一行控件内提供「更换本机壁纸」：粘贴图片绝对路径 → 设为壁纸；
+或点「恢复默认集」回到 `wallpapers.txt` 清单。
+- 自设结果持久化于 `art/user.wall.txt`（不入库），重启后仍生效；
+- 受插件 fs 沙箱限制：路径需位于当前工作区（如放进 `art/` 后填该路径），
+  外部盘符会提示不可读。
 
-- 缁勪欢绾ч噸缁樹緷璧栧畼鏂?token + 鑷湁鎻掓Ы锛屼笉纭紪鐮?hash 绫诲悕锛堣鎶ュ憡 搂12锛夈€?- favicon/鏍囬鍦?index 娉ㄥ叆锛屽嵏杞藉悗闇€鍒锋柊椤甸潰鎭㈠鍘熷 favicon銆?- 鏈幆澧冨姩鎬?Client 鏃?DOM/canvas 鏉冮檺锛岃嚜鍔ㄥ彇鑹蹭负鎵╁睍鐐癸紙褰撳墠鐢ㄤ汉宸ヨ皟鑹叉澘鏂囦欢锛夈€?
+## 安装 / 卸载（当前会话）
+
+- 安装：在对话中 `cordis_run` 激活 `chroa-1`（当前 Package `pkg-2`；首次需在 Run 卡批准）。
+- 卸载恢复默认：`cordis_stop(chroa-1)` 或 `cordis_undefine(chroa-1)`。
+
+## 重新构建 / 持久化说明
+
+本插件是**动态插件**（随进程存在，按会话管理）。如需在 DSH 重启后仍加载，
+把 `plugin/host-body.js` 与 `plugin/client-body.js` 封装为常规 client 模块包
+（可参考 `dsh-better-sidebar` 的 profile bundle 方式）——本版不修改 profile 组合。
+
+## 已知限制
+
+- 组件级重绘依赖官方 token + 自有插槽，不硬编码 hash 类名（见报告 §12）。
+- favicon/标题在 index 注入，卸载后需刷新页面恢复原始 favicon。
+- 本环境动态 Client 无 DOM/canvas 权限，自动取色为扩展点（当前用人工调色板文件）。
