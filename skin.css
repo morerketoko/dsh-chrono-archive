@@ -96,7 +96,9 @@ body {
   --shiki-token-link: var(--chrono-link);
 }
 
-/* ---------- 4. 滚动条：细、低对比、hover 显形 ---------- */
+/* ---------- 4. 滚动条：档案“红针”（参照早期酒红档案版复原） ----------
+   细窄酒红针状滑块，贴内容边缘；hover/拖动加深为更浓的酒红。
+   颜色消费 --chrono-wine，浅色 #8A4438 / 深色 #A05244 自动切换。 */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -105,11 +107,14 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--chrono-ink-muted, #8F8673) 34%, transparent);
+  background: color-mix(in srgb, var(--chrono-wine, #A05244) 48%, transparent);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--chrono-accent-soft, #C9A24B) 55%, transparent);
+  background: color-mix(in srgb, var(--chrono-wine, #A05244) 74%, transparent);
+}
+::-webkit-scrollbar-thumb:active {
+  background: color-mix(in srgb, var(--chrono-wine, #A05244) 92%, transparent);
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
@@ -118,7 +123,7 @@ body {
   body,
   body * {
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--chrono-ink-muted) 40%, transparent) transparent;
+    scrollbar-color: color-mix(in srgb, var(--chrono-wine, #A05244) 48%, transparent) transparent;
   }
 }
 
