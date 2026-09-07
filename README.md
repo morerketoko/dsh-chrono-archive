@@ -34,7 +34,7 @@ chrono-archive/
 
 ```ini
 @pos center 38%     # 背景定位
-@opacity 0.5        # 壁纸不透明度（0.38 ~ 0.55 更明显）
+@opacity 0.6        # 壁纸不透明度（0.45 太淡 → 0.7 明显）
 @blur 3px           # 背景模糊 2 ~ 6px
 @sat 1.0            # 饱和度
 @contrast 1.02      # 对比度

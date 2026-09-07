@@ -14,7 +14,7 @@
 #   3) 其余行 = 壁纸路径（把图片放进本目录 art/），可选 ` :: 定位` 覆盖定位
 # 动态插件 Host 的 fs 只能读其工作区；外部盘符路径会被跳过。
 @pos center 38%
-@opacity 0.5
+@opacity 0.6
 @blur 3px
 @sat 1.0
 @contrast 1.02

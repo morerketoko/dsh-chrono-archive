@@ -10,12 +10,17 @@
      - 不引用任何 DSH 组件 hash 类名。
    ============================================================= */
 
-/* ---------- 1. 画布底色与文本基底 ---------- */
+/* ---------- 1. 画布底色与文本基底 ----------
+   关键层级：canvas 画在 html；body 透明；壁纸伪层位于 body 内容之下、
+   body 自身背景之上（body 透明即可见），界面半透明 surface 再叠于其上。 */
 html {
-  background-color: var(--chrono-canvas, #101319);
+  background-color: #F1EBDB; /* 浅色 canvas（文件 palette light.canvas） */
+}
+html:has(body[data-ds-dark-theme]) {
+  background-color: #101319; /* 深色 canvas（文件 palette dark.canvas） */
 }
 body {
-  background-color: var(--chrono-canvas, #101319);
+  background-color: transparent;
   color: var(--chrono-ink, #EAE2CE);
 }
 
@@ -36,16 +41,16 @@ body::after {
 /* 背景栈：壁纸在最底 → 档案 wash 压暗（轻）→ 极轻暗角 */
 body::before {
   background-image:
-    radial-gradient(130% 100% at 50% 0%, transparent 64%, color-mix(in srgb, var(--chrono-ink, #000) 8%, transparent) 100%),
-    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 32%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 48%, transparent)),
+    radial-gradient(130% 100% at 50% 0%, transparent 66%, color-mix(in srgb, var(--chrono-ink, #000) 7%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 26%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 38%, transparent)),
     var(--chrono-art-a, none);
   opacity: var(--chrono-op-a, 0);
   filter: blur(var(--chrono-blur, 3px)) saturate(var(--chrono-sat, 1)) contrast(var(--chrono-contrast, 1.02));
 }
 body::after {
   background-image:
-    radial-gradient(130% 100% at 50% 0%, transparent 64%, color-mix(in srgb, var(--chrono-ink, #000) 8%, transparent) 100%),
-    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 32%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 48%, transparent)),
+    radial-gradient(130% 100% at 50% 0%, transparent 66%, color-mix(in srgb, var(--chrono-ink, #000) 7%, transparent) 100%),
+    linear-gradient(color-mix(in srgb, var(--chrono-canvas, #101319) 26%, transparent), color-mix(in srgb, var(--chrono-canvas, #101319) 38%, transparent)),
     var(--chrono-art-b, none);
   opacity: var(--chrono-op-b, 0);
   filter: blur(var(--chrono-blur, 3px)) saturate(var(--chrono-sat, 1)) contrast(var(--chrono-contrast, 1.02));
