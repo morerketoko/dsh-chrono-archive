@@ -1,7 +1,6 @@
-# dsh-chrono-archive-theme bundle patch (kept intentionally EMPTY)
-#
-# The host half is mounted by the web profile's own cordis.patch.yml row
-# (id: chrono-archive, name: 'dsh-chrono-archive-theme') to avoid duplicate
-# loader ids. The browser client module is auto-discovered from node_modules
-# via the package's `dsh.client` metadata. Nothing to insert here.
-[]
+# dsh-chrono-archive-theme bundle patch
+# Official install channel (dsh plugin --profile web add <this-package>)
+# mounts this host half once; client half auto-discovers from node_modules.
+- insert:
+    - id: chrono-archive
+      name: 'dsh-chrono-archive-theme'
