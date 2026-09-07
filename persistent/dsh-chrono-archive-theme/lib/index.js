@@ -31,7 +31,7 @@ function parsePalette(text) {
 }
 function num(v, d) { const n = Number.parseFloat(v); return Number.isFinite(n) ? n : d; }
 function parseWallpaperDoc(text) {
-  const settings = { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 300, solidity: 0.72 };
+  const settings = { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 300, solidity: 0.72, glass: 'auto', glassBlur: 14 };
   const walls = [];
   for (const line of parseLines(text)) {
     if (line.startsWith('@')) {
@@ -89,6 +89,8 @@ function registerWith(ctx, webServer, fs) {
     if (prefs.opacity !== undefined) { const n = Number.parseFloat(prefs.opacity); if (Number.isFinite(n)) parsed.settings.opacity = Math.min(1, Math.max(0, n)); }
     if (prefs.pos) parsed.settings.pos = prefs.pos;
     if (prefs.preset) parsed.settings.preset = prefs.preset;
+    if (prefs.glass === 'auto' || prefs.glass === 'on' || prefs.glass === 'off') parsed.settings.glass = prefs.glass;
+    if (prefs.glassBlur !== undefined) { const g = Number.parseFloat(prefs.glassBlur); if (Number.isFinite(g)) parsed.settings.glassBlur = Math.min(24, Math.max(0, Math.round(g))); }
     let walls = parsed.walls.map((w, i) => ({ key: 'w' + i, file: w.path, pos: w.pos || '' }));
     const overrideRaw = await readFileText(fs, OVERRIDE_FILE);
     const overridePath = (overrideRaw || '').trim();
@@ -161,6 +163,8 @@ function registerWith(ctx, webServer, fs) {
       if (typeof args.preset === 'string' && args.preset) lines.push('preset=' + args.preset);
       if (typeof args.opacity === 'number') lines.push('opacity=' + String(Math.min(1, Math.max(0, args.opacity))));
       if (typeof args.pos === 'string') lines.push('pos=' + (args.pos || 'center'));
+      if (args.glass === 'auto' || args.glass === 'on' || args.glass === 'off') lines.push('glass=' + args.glass);
+      if (typeof args.glassBlur === 'number' && Number.isFinite(args.glassBlur)) lines.push('glassBlur=' + String(Math.min(24, Math.max(0, Math.round(args.glassBlur)))));
       const t = await fs.resolve(PREF_FILE);
       await fs.writeText(t, lines.join('\n'));
       sendJson(res, 200, { ok: true });

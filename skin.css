@@ -398,3 +398,7 @@ body {
   --dsw-alias-bg-mask-drop: rgba(0, 0, 0, 0.5);
   --dsw-alias-state-warn-label: #F3EAD5;
 }
+.chrono-wall-input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

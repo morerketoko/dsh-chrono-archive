@@ -148,7 +148,7 @@ window.__ModuleLoader__.load({
 			warm: { label: '暖纸 · Warm', desc: '半透明暖侧栏', rail: '', palLight: {}, settings: { opacity: 0.6, blur: '0px', sat: 1.02, contrast: 1.02, solidity: 0.76 } },
 			quiet: { label: '安静 · Quiet', desc: '低干扰阅读', rail: '', palLight: {}, settings: { opacity: 0.34, blur: '4px', sat: 0.95, contrast: 1.0, solidity: 0.9 } },
 		};
-		const ctrl = { current: 'bright', opacity: 0.68, pos: '', setPreset: null, setOpacity: null, setPos: null, setWall: null, clearWall: null, subs: [] };
+		const ctrl = { current: 'bright', opacity: 0.68, pos: '', glassMode: 'auto', glassBlur: 14, setPreset: null, setOpacity: null, setPos: null, setGlassMode: null, setGlassBlur: null, setWall: null, clearWall: null, subs: [] };
 		ctrl.notify = function () { for (const cb of this.subs.slice()) { try { cb(); } catch (_) {} } };
 		const SERIF = "Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif";
 		function SealSvg(props) {
@@ -188,10 +188,16 @@ window.__ModuleLoader__.load({
 			const [, bump] = React.useState(0);
 			const [posVal, setPosVal] = React.useState(ctrl.pos || '');
 			const [opacityVal, setOpacityVal] = React.useState(Math.round((ctrl.opacity || 0.68) * 100));
+			const [glassModeVal, setGlassModeVal] = React.useState(ctrl.glassMode || 'auto');
+			const [glassBlurVal, setGlassBlurVal] = React.useState(ctrl.glassBlur || 14);
 			const [wallMsg, setWallMsg] = React.useState('');
 			const [wallPath, setWallPath] = React.useState('');
 			React.useEffect(() => {
-				const cb = () => { bump((n) => n + 1); };
+				const cb = () => {
+					setGlassModeVal(ctrl.glassMode || 'auto');
+					setGlassBlurVal(ctrl.glassBlur || 14);
+					bump((n) => n + 1);
+				};
 				ctrl.subs.push(cb);
 				return () => { const i = ctrl.subs.indexOf(cb); if (i >= 0) ctrl.subs.splice(i, 1); };
 			}, []);
@@ -223,6 +229,29 @@ window.__ModuleLoader__.load({
 					}),
 					React.createElement('button', { type: 'button', className: 'chrono-preset-chip', onClick: () => { if (ctrl.setPos) ctrl.setPos(posVal); } }, '应用')),
 				React.createElement('div', { className: 'chrono-wall-row' },
+					React.createElement('span', { className: 'chrono-preset-desc' }, '玻璃窗'),
+					React.createElement('button', {
+						type: 'button', className: 'chrono-preset-chip', 'data-active': String(glassModeVal === 'auto'),
+						onClick: () => { if (ctrl.setGlassMode) ctrl.setGlassMode('auto'); },
+					}, '自动'),
+					React.createElement('button', {
+						type: 'button', className: 'chrono-preset-chip', 'data-active': String(glassModeVal === 'on'),
+						onClick: () => { if (ctrl.setGlassMode) ctrl.setGlassMode('on'); },
+					}, '常开'),
+					React.createElement('button', {
+						type: 'button', className: 'chrono-preset-chip', 'data-active': String(glassModeVal === 'off'),
+						onClick: () => { if (ctrl.setGlassMode) ctrl.setGlassMode('off'); },
+					}, '关闭'),
+					React.createElement('span', { className: 'chrono-preset-desc' }, glassModeVal === 'off' ? '不显示玻璃' : (glassModeVal === 'on' ? '始终磨砂' : '壁纸清晰后自动'))),
+				React.createElement('div', { className: 'chrono-wall-row' },
+					React.createElement('label', { className: 'chrono-preset-desc' }, '玻璃强度'),
+					React.createElement('input', {
+						className: 'chrono-wall-input', type: 'range', min: 0, max: 24, step: 1, value: glassBlurVal,
+						disabled: glassModeVal === 'off',
+						onChange: (e) => { const v = Number(e.target.value); setGlassBlurVal(v); if (ctrl.setGlassBlur) ctrl.setGlassBlur(v); },
+					}),
+					React.createElement('span', { className: 'chrono-preset-desc' }, glassBlurVal + 'px')),
+				React.createElement('div', { className: 'chrono-wall-row' },
 					React.createElement('input', {
 						className: 'chrono-wall-input', type: 'text', placeholder: '本机壁纸绝对路径（工作区内）', value: wallPath,
 						onChange: (e) => setWallPath(e.target.value),
@@ -253,7 +282,7 @@ window.__ModuleLoader__.load({
 			let baseDark = FALLBACK_DARK;
 			let palLight = FALLBACK_LIGHT;
 			let palDark = FALLBACK_DARK;
-			let settings = { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 0, solidity: 0.72 };
+			let settings = { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 0, solidity: 0.72, glass: 'auto', glassBlur: 14 };
 			let walls = [];
 			let index = 0;
 			let visible = 'B';
@@ -282,8 +311,12 @@ window.__ModuleLoader__.load({
 				map['--chrono-contrast'] = { light: String(settings.contrast), dark: String(settings.contrast) };
 				const clarity = clamp(settings.opacity, 0, 1);
 				map['--chrono-clarity'] = { light: String(clarity), dark: String(clarity) };
-				const glassBlur = clarity >= 0.9 ? '14px' : (clarity >= 0.7 ? '6px' : '0px');
-				map['--chrono-glass-blur'] = { light: glassBlur, dark: glassBlur };
+				const gm = settings.glass === 'on' || settings.glass === 'off' ? settings.glass : 'auto';
+				const gb = Math.min(24, Math.max(0, Number(settings.glassBlur) || 14));
+				let gpx = 0;
+				if (gm === 'on') gpx = gb;
+				else if (gm === 'auto') gpx = clarity >= 0.9 ? gb : (clarity >= 0.7 ? Math.max(2, Math.round(gb * 0.45)) : 0);
+				map['--chrono-glass-blur'] = { light: gpx ? gpx + 'px' : '0px', dark: gpx ? gpx + 'px' : '0px' };
 				try { latestDispose = theme.overrideTokens('chrono-archive', map); } catch (e) { console.error('[chrono-archive-theme] override failed', e && e.message); }
 			}
 			const urlOf = (i) => (walls.length ? 'url("' + walls[i % walls.length].url + '")' : 'none');
@@ -310,7 +343,7 @@ window.__ModuleLoader__.load({
 			}
 			function savePrefs() {
 				try {
-					fetch('/chrono-prefs-save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preset: ctrl.current, opacity: settings.opacity, pos: settings.pos }) }).catch(() => {});
+					fetch('/chrono-prefs-save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preset: ctrl.current, opacity: settings.opacity, pos: settings.pos, glass: ctrl.glassMode || 'auto', glassBlur: ctrl.glassBlur || 14 }) }).catch(() => {});
 				} catch (_) {}
 			}
 			function applyPreset(name) {
@@ -325,6 +358,22 @@ window.__ModuleLoader__.load({
 			ctrl.setPreset = (name) => { if (!PRESETS[name]) return; try { applyPreset(name); } catch (e) { console.error('[chrono-archive-theme] preset failed', e && e.message); } ctrl.notify(); };
 			ctrl.setOpacity = (v) => { applyOpacity(v); ctrl.notify(); };
 			ctrl.setPos = (val) => { settings.pos = String(val || '').trim() || 'center'; ctrl.pos = settings.pos; paint(); savePrefs(); };
+			ctrl.setGlassMode = (m) => {
+				if (m !== 'auto' && m !== 'on' && m !== 'off') return;
+				settings.glass = m;
+				ctrl.glassMode = m;
+				paint();
+				savePrefs();
+				ctrl.notify();
+			};
+			ctrl.setGlassBlur = (px) => {
+				const v = Math.min(24, Math.max(0, Math.round(Number(px) || 0)));
+				settings.glassBlur = v;
+				ctrl.glassBlur = v;
+				paint();
+				savePrefs();
+				ctrl.notify();
+			};
 			ctrl.setWall = async (path) => {
 				try {
 					const res = await fetch('/chrono-wall-set', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: String(path || '') }) });
@@ -372,6 +421,8 @@ window.__ModuleLoader__.load({
 				ctrl.current = (cfg.settings && cfg.settings.preset) || ctrl.current;
 				ctrl.opacity = settings.opacity;
 				ctrl.pos = settings.pos || ctrl.pos;
+				ctrl.glassMode = settings.glass === 'on' || settings.glass === 'off' ? settings.glass : 'auto';
+				ctrl.glassBlur = Math.min(24, Math.max(0, Number(settings.glassBlur) || 14));
 				walls = (cfg.wallpapers || []).map((w) => ({ url: w.url, pos: w.pos || '' }));
 				layoutArt();
 				applyPreset(ctrl.current);
