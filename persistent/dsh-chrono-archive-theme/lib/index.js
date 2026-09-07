@@ -3,6 +3,7 @@
 //     fixing silent no-mount when this row starts before services exist.
 const CHRONO_DIR = 'F:\\dsh试验工作区\\chrono-archive';
 const OVERRIDE_FILE = CHRONO_DIR + '\\art\\user.wall.txt';
+const PREF_FILE = CHRONO_DIR + '\\art\\user.prefs.txt';
 
 function readFileText(fs, path) {
   return fs.resolve(path).then((target) => fs.readText(target)).catch(() => null);
@@ -78,6 +79,16 @@ function registerWith(ctx, webServer, fs) {
   async function loadState() {
     const doc = await readFileText(fs, CHRONO_DIR + '\\wallpapers.txt');
     const parsed = parseWallpaperDoc(doc || '');
+    // 用户偏好（preset / opacity / pos）叠加到 settings
+    const prefsRaw = (await readFileText(fs, PREF_FILE)) || '';
+    const prefs = {};
+    for (const pl of prefsRaw.split(/\r?\n/)) {
+      const eq = pl.indexOf('=');
+      if (eq > 0) prefs[pl.slice(0, eq).trim()] = pl.slice(eq + 1).trim();
+    }
+    if (prefs.opacity !== undefined) { const n = Number.parseFloat(prefs.opacity); if (Number.isFinite(n)) parsed.settings.opacity = Math.min(1, Math.max(0, n)); }
+    if (prefs.pos) parsed.settings.pos = prefs.pos;
+    if (prefs.preset) parsed.settings.preset = prefs.preset;
     let walls = parsed.walls.map((w, i) => ({ key: 'w' + i, file: w.path, pos: w.pos || '' }));
     const overrideRaw = await readFileText(fs, OVERRIDE_FILE);
     const overridePath = (overrideRaw || '').trim();
@@ -141,6 +152,18 @@ function registerWith(ctx, webServer, fs) {
       const ot = await fs.resolve(OVERRIDE_FILE);
       await fs.writeText(ot, '');
       sendJson(res, 200, toView(await refresh()));
+    } catch (err) { sendJson(res, 500, { ok: false, error: String(err && err.message || err) }); }
+  } }));
+  disposers.push(webServer.register({ kind: 'exact', path: '/chrono-prefs-save', handler: async (req, res) => {
+    try {
+      const args = await readJsonBody(req);
+      const lines = [];
+      if (typeof args.preset === 'string' && args.preset) lines.push('preset=' + args.preset);
+      if (typeof args.opacity === 'number') lines.push('opacity=' + String(Math.min(1, Math.max(0, args.opacity))));
+      if (typeof args.pos === 'string') lines.push('pos=' + (args.pos || 'center'));
+      const t = await fs.resolve(PREF_FILE);
+      await fs.writeText(t, lines.join('\n'));
+      sendJson(res, 200, { ok: true });
     } catch (err) { sendJson(res, 500, { ok: false, error: String(err && err.message || err) }); }
   } }));
   disposers.push(webServer.register({ kind: 'prefix', path: '/chrono-assets', handler: async (req, res) => {

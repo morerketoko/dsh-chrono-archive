@@ -148,7 +148,7 @@ window.__ModuleLoader__.load({
 			warm: { label: '暖纸 · Warm', desc: '半透明暖侧栏', rail: '', palLight: {}, settings: { opacity: 0.6, blur: '0px', sat: 1.02, contrast: 1.02, solidity: 0.76 } },
 			quiet: { label: '安静 · Quiet', desc: '低干扰阅读', rail: '', palLight: {}, settings: { opacity: 0.34, blur: '4px', sat: 0.95, contrast: 1.0, solidity: 0.9 } },
 		};
-		const ctrl = { current: 'bright', setPreset: null, setOpacity: null, setPos: null, setWall: null, clearWall: null, subs: [] };
+		const ctrl = { current: 'bright', opacity: 0.68, pos: '', setPreset: null, setOpacity: null, setPos: null, setWall: null, clearWall: null, subs: [] };
 		ctrl.notify = function () { for (const cb of this.subs.slice()) { try { cb(); } catch (_) {} } };
 		const SERIF = "Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif";
 		function SealSvg(props) {
@@ -186,8 +186,8 @@ window.__ModuleLoader__.load({
 		}
 		function ChronoPresetsRow() {
 			const [, bump] = React.useState(0);
-			const [posVal, setPosVal] = React.useState('');
-			const [opacityVal, setOpacityVal] = React.useState(68);
+			const [posVal, setPosVal] = React.useState(ctrl.pos || '');
+			const [opacityVal, setOpacityVal] = React.useState(Math.round((ctrl.opacity || 0.68) * 100));
 			const [wallMsg, setWallMsg] = React.useState('');
 			const [wallPath, setWallPath] = React.useState('');
 			React.useEffect(() => {
@@ -294,27 +294,33 @@ window.__ModuleLoader__.load({
 			}
 			function applyOpacity(v) {
 				settings.opacity = clamp(Number(v) / 100 || 0, 0, 1);
+				ctrl.opacity = settings.opacity;
 				const op = String(settings.opacity);
 				if (visible === 'A') opA = op; else opB = op;
 				paint();
+				savePrefs();
 			}
 			function applyWallList(list) {
 				walls = (list || []).map((w) => ({ url: w.url, pos: w.pos || '' }));
 				layoutArt();
+			}
+			function savePrefs() {
+				try {
+					fetch('/chrono-prefs-save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ preset: ctrl.current, opacity: settings.opacity, pos: settings.pos }) }).catch(() => {});
+				} catch (_) {}
 			}
 			function applyPreset(name) {
 				const p = PRESETS[name] || PRESETS.bright;
 				ctrl.current = name;
 				palLight = mergePal(baseLight, p.palLight || {});
 				palDark = mergePal(baseDark, p.palDark || {});
-				settings = Object.assign({}, settings, p.settings);
 				insertRail(p.rail);
-				applyOpacity(Math.round(settings.opacity * 100));
 				paint();
+				savePrefs();
 			}
 			ctrl.setPreset = (name) => { if (!PRESETS[name]) return; try { applyPreset(name); } catch (e) { console.error('[chrono-archive-theme] preset failed', e && e.message); } ctrl.notify(); };
 			ctrl.setOpacity = (v) => { applyOpacity(v); ctrl.notify(); };
-			ctrl.setPos = (val) => { settings.pos = String(val || '').trim() || 'center'; paint(); };
+			ctrl.setPos = (val) => { settings.pos = String(val || '').trim() || 'center'; ctrl.pos = settings.pos; paint(); savePrefs(); };
 			ctrl.setWall = async (path) => {
 				try {
 					const res = await fetch('/chrono-wall-set', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: String(path || '') }) });
@@ -359,8 +365,13 @@ window.__ModuleLoader__.load({
 				baseLight = mergePal(FALLBACK_LIGHT, cfg.palettes && cfg.palettes.light);
 				baseDark = mergePal(FALLBACK_DARK, cfg.palettes && cfg.palettes.dark);
 				settings = Object.assign(settings, cfg.settings);
+				ctrl.current = (cfg.settings && cfg.settings.preset) || ctrl.current;
+				ctrl.opacity = settings.opacity;
+				ctrl.pos = settings.pos || ctrl.pos;
 				walls = (cfg.wallpapers || []).map((w) => ({ url: w.url, pos: w.pos || '' }));
+				layoutArt();
 				applyPreset(ctrl.current);
+				ctrl.notify();
 				const secs = Number(settings.cycleSeconds) || 0;
 				if (walls.length > 1 && secs >= 5) {
 					intervalDispose = timer.interval(() => { if (alive) advance(); }, secs * 1000);
