@@ -5,9 +5,9 @@ window.__ModuleLoader__.load({
 		var exports = module.exports;
 		Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 		const React = require("react");
-		console.log('[chrono-archive-theme] module factory loaded');
 		const FALLBACK_LIGHT = { canvas: '#E6DBC2', base: '#DDD1B6', raised: '#EAE0C8', overlayBg: '#F3ECD9', ink: '#2E271C', inkSoft: '#4C4132', inkMuted: '#6B5E49', accent: '#967429', accentSoft: '#B78F3E', accentPale: '#D9BC72', wine: '#7E3F34', pine: '#4D6A54', slate: '#4F5E70', link: '#42577C', success: '#51744F', warn: '#8F6F28', danger: '#984439', codeBg: '#EDE2C9', codeBanner: '#E2D5B8', codeInline: '#F3EBD7', selection: '#D0B67A' };
 		const FALLBACK_DARK = { canvas: '#101319', base: '#161A22', raised: '#1D232D', overlayBg: '#1B212B', ink: '#EAE2CE', inkSoft: '#C7BFA9', inkMuted: '#A49B86', accent: '#C9A24B', accentSoft: '#DFBE6E', accentPale: '#EAD08F', wine: '#A05244', pine: '#6E8D72', slate: '#7E93A8', link: '#A9BFE0', success: '#83A987', warn: '#D9AF5E', danger: '#C96B5B', codeBg: '#0F141C', codeBanner: '#171E29', codeInline: '#232B37', selection: '#8A6F2F' };
+		const BRIGHT_LIGHT = { canvas: '#F1EBDB', base: '#EBE2CD', raised: '#F7F1E1', overlayBg: '#FDFAF0', ink: '#32291E', inkSoft: '#665B47', inkMuted: '#948871', accent: '#9B7830', accentSoft: '#BE9443', accentPale: '#E7CA7C', wine: '#8A4438', pine: '#52705A', slate: '#526173', link: '#4A5F86', success: '#55785A', warn: '#9A7A2E', danger: '#A3483C', codeBg: '#F5EEDD', codeBanner: '#EEE5CC', codeInline: '#FAF4E6', selection: '#DDC48E' };
 		const ARCH_PAPER = '#F6EED9';
 		const ARCH_INK = '#251C0F';
 		function hexRgb(h) {
@@ -142,6 +142,14 @@ window.__ModuleLoader__.load({
 			return map;
 		}
 		const RAIL_GOLD = '.pI_x6G_sidebarCol{--chrono-rail-bg:rgba(11,12,17,.97);--chrono-rail-surface:#232833;--chrono-rail-elevated:#2E3542;--chrono-rail-floating:rgba(30,34,42,.985);--chrono-rail-hover:rgba(201,162,75,.11);--chrono-rail-active:rgba(201,162,75,.22);--chrono-rail-ink:#F3EAD5;--chrono-rail-ink2:#CEC1A1;--chrono-rail-ink3:#A79877;--chrono-rail-gold:#C9A24B;--chrono-rail-gold-bright:#E3C467;--chrono-rail-contrast-fill:#E9DDBB;--chrono-rail-contrast-text:#241C0F;--dsw-alias-bg-base:var(--chrono-rail-bg);--dsw-alias-bg-layer-1:var(--chrono-rail-surface);--dsw-alias-bg-layer-2:var(--chrono-rail-elevated);--dsw-alias-bg-layer-3:color-mix(in srgb,var(--chrono-rail-elevated) 78%,#000);--dsw-alias-bg-layer-4:var(--chrono-rail-elevated);--dsw-alias-bg-module-platform:var(--chrono-rail-surface);--dsw-alias-bg-overlay:var(--chrono-rail-floating);--dsw-alias-button-contrast-fill:var(--chrono-rail-contrast-fill);--dsw-alias-button-elevated-fill:var(--chrono-rail-elevated);--dsw-alias-button-floating-fill:var(--chrono-rail-floating);--dsw-alias-button-floating-hover:color-mix(in srgb,var(--chrono-rail-gold) 12%,var(--chrono-rail-elevated));--dsw-alias-button-ghost-active-fill:rgba(255,255,255,.05);--dsw-alias-button-ghost-active-hover:color-mix(in srgb,var(--chrono-rail-gold) 13%,transparent);--dsw-alias-button-tool-bar-fill:rgba(255,255,255,.04);--dsw-alias-button-tool-bar-hover:var(--chrono-rail-hover);--dsw-alias-interactive-bg-hover:var(--chrono-rail-hover);--dsw-alias-interactive-bg-active:var(--chrono-rail-active);--dsw-alias-interactive-bg-hover-solid:rgba(255,255,255,.07);--dsw-alias-label-primary:var(--chrono-rail-ink);--dsw-alias-label-primary-bluish:var(--chrono-rail-ink);--dsw-alias-label-primary-dimmed:color-mix(in srgb,var(--chrono-rail-ink) 62%,var(--chrono-rail-gold) 38%);--dsw-alias-label-primary-inverted:var(--chrono-rail-contrast-text);--dsw-alias-label-secondary:var(--chrono-rail-ink2);--dsw-alias-label-tertiary:var(--chrono-rail-ink3);--dsw-alias-label-caption:var(--chrono-rail-ink3);--dsw-alias-label-dimmed:color-mix(in srgb,var(--chrono-rail-ink) 64%,transparent);--dsw-alias-border-l1:color-mix(in srgb,var(--chrono-rail-gold) 18%,transparent);--dsw-alias-border-l2:color-mix(in srgb,var(--chrono-rail-gold) 28%,transparent);--dsw-alias-border-l3:color-mix(in srgb,var(--chrono-rail-gold) 44%,transparent);--dsw-alias-border-l4:color-mix(in srgb,var(--chrono-rail-gold) 60%,transparent);--dsw-specific-menu:var(--chrono-rail-floating);--dsw-specific-selector:var(--chrono-rail-floating);--dsw-specific-input-major:#2A303B;--dsw-specific-sidebar-fill:var(--chrono-rail-bg);--dsw-specific-sidebar-nav-item-active:color-mix(in srgb,var(--chrono-rail-gold) 16%,transparent);--dsw-specific-sidebar-nav-item-active-accent:color-mix(in srgb,var(--chrono-rail-gold) 28%,transparent);--dsw-specific-sidebar-nav-item-hover:var(--chrono-rail-hover);--dsw-specific-tip:var(--chrono-rail-surface);--dsw-specific-bubble:var(--chrono-rail-surface);--dsw-alias-toast-bg:var(--chrono-rail-floating);--dsw-alias-tooltip-bg:var(--chrono-rail-floating);--chrono-ink:var(--chrono-rail-ink);--chrono-ink-soft:var(--chrono-rail-ink2);--chrono-ink-muted:var(--chrono-rail-ink3);--chrono-accent:var(--chrono-rail-gold);--chrono-accent-soft:var(--chrono-rail-gold-bright);--chrono-accent-pale:var(--chrono-rail-gold-bright);background:linear-gradient(180deg,color-mix(in srgb,var(--chrono-rail-gold) 6%,transparent),transparent 96px),var(--chrono-rail-bg);border-right-color:color-mix(in srgb,var(--chrono-rail-gold) 44%,transparent)}body[data-ds-dark-theme] .pI_x6G_sidebarCol{--chrono-rail-bg:rgba(6,7,11,.95);--chrono-rail-surface:#1D222C;--chrono-rail-elevated:#262C38}';
+		const PRESETS = {
+			bright: { label: '亮纸 · Bright', desc: '高亮暖纸 · 黑金侧栏', rail: RAIL_GOLD, palLight: BRIGHT_LIGHT, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.72 } },
+			paper: { label: '旧纸 · Parchment', desc: '低曝旧纸 · 黑金侧栏', rail: RAIL_GOLD, palLight: {}, settings: { opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1.0, solidity: 0.72 } },
+			warm: { label: '暖纸 · Warm', desc: '半透明暖侧栏', rail: '', palLight: {}, settings: { opacity: 0.6, blur: '0px', sat: 1.02, contrast: 1.02, solidity: 0.76 } },
+			quiet: { label: '安静 · Quiet', desc: '低干扰阅读', rail: '', palLight: {}, settings: { opacity: 0.34, blur: '4px', sat: 0.95, contrast: 1.0, solidity: 0.9 } },
+		};
+		const ctrl = { current: 'bright', setPreset: null, setOpacity: null, setPos: null, setWall: null, clearWall: null, subs: [] };
+		ctrl.notify = function () { for (const cb of this.subs.slice()) { try { cb(); } catch (_) {} } };
 		const SERIF = "Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif";
 		function SealSvg(props) {
 			const inner = props.text || 'CA';
@@ -176,6 +184,53 @@ window.__ModuleLoader__.load({
 				React.createElement('div', { className: 'chrono-grain' }),
 				React.createElement('div', { className: 'chrono-ambient-glow' }));
 		}
+		function ChronoPresetsRow() {
+			const [, bump] = React.useState(0);
+			const [posVal, setPosVal] = React.useState('');
+			const [opacityVal, setOpacityVal] = React.useState(68);
+			const [wallMsg, setWallMsg] = React.useState('');
+			const [wallPath, setWallPath] = React.useState('');
+			React.useEffect(() => {
+				const cb = () => { bump((n) => n + 1); };
+				ctrl.subs.push(cb);
+				return () => { const i = ctrl.subs.indexOf(cb); if (i >= 0) ctrl.subs.splice(i, 1); };
+			}, []);
+			const names = Object.keys(PRESETS);
+			const active = PRESETS[ctrl.current] || PRESETS.bright;
+			const doSet = async () => { if (!ctrl.setWall) return; setWallMsg('…'); const r = await ctrl.setWall(wallPath); setWallMsg(r && r.ok ? '✓ 已设为当前壁纸' : ('✗ ' + ((r && r.error) || '失败'))); };
+			const doClear = async () => { if (!ctrl.clearWall) return; const r = await ctrl.clearWall(); setWallMsg(r && r.ok ? '✓ 已恢复默认壁纸集' : ('✗ ' + ((r && r.error) || '失败'))); };
+			return React.createElement('div', { className: 'chrono-preset-row' },
+				React.createElement('span', { className: 'chrono-preset-title' }, 'CHRONO ARCHIVE · 时序档案馆 皮肤预设'),
+				React.createElement('div', { className: 'chrono-preset-chips' },
+					names.map((name) => React.createElement('button', {
+						key: name, type: 'button', className: 'chrono-preset-chip',
+						'data-active': String(name === ctrl.current),
+						onClick: () => { if (ctrl.setPreset) ctrl.setPreset(name); },
+					}, PRESETS[name].label))),
+				React.createElement('span', { className: 'chrono-preset-desc' }, active.desc + ' — 卸载插件即恢复默认外观'),
+				React.createElement('div', { className: 'chrono-wall-row', style: { marginTop: 6 } },
+					React.createElement('label', { className: 'chrono-preset-desc' }, '壁纸透明度'),
+					React.createElement('input', {
+						className: 'chrono-wall-input', type: 'range', min: 0, max: 100, step: 2, value: opacityVal,
+						onChange: (e) => { const v = Number(e.target.value); setOpacityVal(v); if (ctrl.setOpacity) ctrl.setOpacity(v); },
+					}),
+					React.createElement('span', { className: 'chrono-preset-desc' }, opacityVal + '%')),
+				React.createElement('div', { className: 'chrono-wall-row' },
+					React.createElement('span', { className: 'chrono-preset-desc' }, '壁纸定位'),
+					React.createElement('input', {
+						className: 'chrono-wall-input', type: 'text', placeholder: '如 center 38% / right center', value: posVal,
+						onChange: (e) => setPosVal(e.target.value),
+					}),
+					React.createElement('button', { type: 'button', className: 'chrono-preset-chip', onClick: () => { if (ctrl.setPos) ctrl.setPos(posVal); } }, '应用')),
+				React.createElement('div', { className: 'chrono-wall-row' },
+					React.createElement('input', {
+						className: 'chrono-wall-input', type: 'text', placeholder: '本机壁纸绝对路径（工作区内）', value: wallPath,
+						onChange: (e) => setWallPath(e.target.value),
+					}),
+					React.createElement('button', { type: 'button', className: 'chrono-preset-chip', onClick: doSet }, '设为壁纸'),
+					React.createElement('button', { type: 'button', className: 'chrono-preset-chip', onClick: doClear }, '恢复默认集')),
+				React.createElement('span', { className: 'chrono-preset-desc' }, wallMsg || '预设/透明度/定位即时生效；换壁纸路径需位于当前工作区（沙箱）'));
+		}
 		function insertStyle(css) {
 			if (!css) return null;
 			const tag = document.createElement('style');
@@ -185,18 +240,19 @@ window.__ModuleLoader__.load({
 			return () => { try { tag.remove(); } catch (_) {} };
 		}
 		async function apply(ctx) {
-			console.log('[chrono-archive-theme] apply called');
 			await new Promise((resolveInject) => { try { ctx.inject(['slots', 'theme', 'timer'], () => resolveInject()); } catch (_) { resolveInject(); } });
 			const slots = ctx.get('slots');
 			const theme = ctx.get('theme');
 			const timer = ctx.get('timer');
-			console.log('[chrono-archive-theme] services ready', { s: !!slots, t: !!theme, ti: !!timer });
 			if (slots === undefined || theme === undefined || timer === undefined) { console.error('[chrono-archive-theme] missing services'); return; }
 			let latestDispose = null;
 			let intervalDispose = null;
+			let railDispose = null;
 			let alive = true;
 			let baseLight = FALLBACK_LIGHT;
 			let baseDark = FALLBACK_DARK;
+			let palLight = FALLBACK_LIGHT;
+			let palDark = FALLBACK_DARK;
 			let settings = { pos: 'center 38%', size: 'cover', opacity: 0.68, blur: '0px', sat: 1.05, contrast: 1, cycleSeconds: 0, solidity: 0.72 };
 			let walls = [];
 			let index = 0;
@@ -206,18 +262,25 @@ window.__ModuleLoader__.load({
 			let opA = 0;
 			let opB = 0;
 			const styleCleanups = [];
+			function insertRail(css) {
+				try { if (railDispose) railDispose(); } catch (_) {}
+				railDispose = null;
+				if (css) { try { railDispose = insertStyle(css); } catch (_) {} }
+			}
 			function paint() {
 				if (!alive || theme === undefined) return;
 				const pos = walls[index] && walls[index].pos ? walls[index].pos : settings.pos;
-				const artExtra = {
-					'--chrono-art-a': artA, '--chrono-art-b': artB,
-					'--chrono-op-a': String(opA), '--chrono-op-b': String(opB),
-					'--chrono-pos': pos, '--chrono-bg-size': settings.size,
-					'--chrono-blur': settings.blur, '--chrono-sat': String(settings.sat), '--chrono-contrast': String(settings.contrast),
-				};
-				const map = composeOverrideMap(schemeTokens(baseLight, settings, false), schemeTokens(baseDark, settings, true));
-				for (const k of Object.keys(artExtra)) map[k] = { light: artExtra[k], dark: artExtra[k] };
-				try { latestDispose = theme.overrideTokens('chrono-archive', map); } catch (_) {}
+				const map = composeOverrideMap(schemeTokens(palLight, settings, false), schemeTokens(palDark, settings, true));
+				map['--chrono-art-a'] = { light: artA, dark: artA };
+				map['--chrono-art-b'] = { light: artB, dark: artB };
+				map['--chrono-op-a'] = { light: String(opA), dark: String(opA) };
+				map['--chrono-op-b'] = { light: String(opB), dark: String(opB) };
+				map['--chrono-pos'] = { light: pos, dark: pos };
+				map['--chrono-bg-size'] = { light: settings.size, dark: settings.size };
+				map['--chrono-blur'] = { light: settings.blur, dark: settings.blur };
+				map['--chrono-sat'] = { light: String(settings.sat), dark: String(settings.sat) };
+				map['--chrono-contrast'] = { light: String(settings.contrast), dark: String(settings.contrast) };
+				try { latestDispose = theme.overrideTokens('chrono-archive', map); } catch (e) { console.error('[chrono-archive-theme] override failed', e && e.message); }
 			}
 			const urlOf = (i) => (walls.length ? 'url("' + walls[i % walls.length].url + '")' : 'none');
 			function layoutArt() {
@@ -229,30 +292,62 @@ window.__ModuleLoader__.load({
 				index = 0;
 				paint();
 			}
-			function advance() {
-				if (walls.length < 2) return;
-				const next = (index + 1) % walls.length;
+			function applyOpacity(v) {
+				settings.opacity = clamp(Number(v) / 100 || 0, 0, 1);
 				const op = String(settings.opacity);
-				if (visible === 'A') { artB = urlOf(next); opA = 0; opB = op; visible = 'B'; }
-				else { artA = urlOf(next); opB = 0; opA = op; visible = 'A'; }
-				index = next;
+				if (visible === 'A') opA = op; else opB = op;
 				paint();
 			}
-			slots.inject('sidebar.brand.mark', () => slots.register({ name: 'sidebar.brand.mark' }, ChronoBrandMark));
-			slots.inject('sidebar.brand.name', () => slots.register({ name: 'sidebar.brand.name' }, ChronoBrandName));
+			function applyWallList(list) {
+				walls = (list || []).map((w) => ({ url: w.url, pos: w.pos || '' }));
+				layoutArt();
+			}
+			function applyPreset(name) {
+				const p = PRESETS[name] || PRESETS.bright;
+				ctrl.current = name;
+				palLight = mergePal(baseLight, p.palLight || {});
+				palDark = mergePal(baseDark, p.palDark || {});
+				settings = Object.assign({}, settings, p.settings);
+				insertRail(p.rail);
+				applyOpacity(Math.round(settings.opacity * 100));
+				paint();
+			}
+			ctrl.setPreset = (name) => { if (!PRESETS[name]) return; try { applyPreset(name); } catch (e) { console.error('[chrono-archive-theme] preset failed', e && e.message); } ctrl.notify(); };
+			ctrl.setOpacity = (v) => { applyOpacity(v); ctrl.notify(); };
+			ctrl.setPos = (val) => { settings.pos = String(val || '').trim() || 'center'; paint(); };
+			ctrl.setWall = async (path) => {
+				try {
+					const res = await fetch('/chrono-wall-set', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: String(path || '') }) });
+					const r = await res.json();
+					if (r && r.ok && Array.isArray(r.wallpapers)) { applyWallList(r.wallpapers); ctrl.notify(); return { ok: true }; }
+					return { ok: false, error: (r && r.error) || 'failed' };
+				} catch (e) { return { ok: false, error: (e && e.message) || String(e) }; }
+			};
+			ctrl.clearWall = async () => {
+				try {
+					const res = await fetch('/chrono-wall-clear', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+					const r = await res.json();
+					if (r && r.ok && Array.isArray(r.wallpapers)) { applyWallList(r.wallpapers); ctrl.notify(); return { ok: true }; }
+					return { ok: false, error: (r && r.error) || 'failed' };
+				} catch (e) { return { ok: false, error: (e && e.message) || String(e) }; }
+			};
+			slots.inject('sidebar.brand.mark', () => { try { return slots.register({ name: 'sidebar.brand.mark', priority: -1 }, ChronoBrandMark); } catch (e) { console.error('[chrono-archive-theme] brand.mark reg failed', e && e.message); return () => {}; } });
+			slots.inject('sidebar.brand.name', () => { try { return slots.register({ name: 'sidebar.brand.name', priority: -1 }, ChronoBrandName); } catch (e) { console.error('[chrono-archive-theme] brand.name reg failed', e && e.message); return () => {}; } });
+			slots.inject('conversation.hero.brand.mark', () => { try { return slots.register({ name: 'conversation.hero.brand.mark', priority: -1 }, ChronoBrandMark); } catch (e) { console.error('[chrono-archive-theme] hero.mark reg failed', e && e.message); return () => {}; } });
 			slots.inject('conversation.composer.dock', () => slots.register({ name: 'conversation.composer.dock', id: 'chrono-archive', order: 30 }, ChronoDock));
 			slots.inject('shell.overlay', () => slots.register({ name: 'shell.overlay', id: 'chrono-archive', order: 90 }, ChronoAmbience));
-			styleCleanups.push(insertStyle(RAIL_GOLD));
-			// 立即按内置调色板应用一次（不等异步配置），保证默认即有主题
+			slots.inject('settings.general.item', () => slots.register({ name: 'settings.general.item', id: 'chrono-archive', order: 90 }, ChronoPresetsRow));
+			insertRail(RAIL_GOLD);
 			try {
-				latestDispose = theme.overrideTokens('chrono-archive', composeOverrideMap(schemeTokens(baseLight, settings, false), schemeTokens(baseDark, settings, true)));
-				console.log('[chrono-archive-theme] default tokens applied');
+				latestDispose = theme.overrideTokens('chrono-archive', composeOverrideMap(schemeTokens(palLight, settings, false), schemeTokens(palDark, settings, true)));
 			} catch (e) { console.error('[chrono-archive-theme] default apply failed', e && e.message); }
 			ctx.effect(() => () => {
 				alive = false;
 				try { if (latestDispose) latestDispose(); } catch (_) {}
 				try { if (intervalDispose) intervalDispose(); } catch (_) {}
+				try { if (railDispose) railDispose(); } catch (_) {}
 				for (const c of styleCleanups) { try { c(); } catch (_) {} }
+				ctrl.subs = [];
 			}, 'chrono-archive-theme: cleanup');
 			try {
 				const res = await fetch('/chrono-config.json', { cache: 'no-store' });
@@ -265,12 +360,21 @@ window.__ModuleLoader__.load({
 				baseDark = mergePal(FALLBACK_DARK, cfg.palettes && cfg.palettes.dark);
 				settings = Object.assign(settings, cfg.settings);
 				walls = (cfg.wallpapers || []).map((w) => ({ url: w.url, pos: w.pos || '' }));
-				layoutArt();
+				applyPreset(ctrl.current);
 				const secs = Number(settings.cycleSeconds) || 0;
-				if (walls.length > 1 && secs >= 5 && timer) {
+				if (walls.length > 1 && secs >= 5) {
 					intervalDispose = timer.interval(() => { if (alive) advance(); }, secs * 1000);
 				}
 			} catch (e) { console.error('[chrono-archive-theme] bootstrap failed', e && e.message); }
+			function advance() {
+				if (walls.length < 2) return;
+				const next = (index + 1) % walls.length;
+				const op = String(settings.opacity);
+				if (visible === 'A') { artB = urlOf(next); opA = 0; opB = op; visible = 'B'; }
+				else { artA = urlOf(next); opB = 0; opA = op; visible = 'A'; }
+				index = next;
+				paint();
+			}
 		}
 		exports.apply = apply;
 		exports.inject = [];
