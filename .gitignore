@@ -4,3 +4,4 @@ wallpapers.txt
 # art/ 收编的壁纸图片随仓库公开（用户指定）；若涉及版权，可删除图片并从
 # wallpapers.txt(.example) 移除对应行，主题会自动回退纯色档案底。
 !art/.gitkeep
+art/user.prefs.txt
