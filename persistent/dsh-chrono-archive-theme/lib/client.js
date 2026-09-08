@@ -250,7 +250,7 @@ window.__ModuleLoader__.load({
 						disabled: glassModeVal === 'off',
 						onChange: (e) => { const v = Number(e.target.value); setGlassBlurVal(v); if (ctrl.setGlassBlur) ctrl.setGlassBlur(v); },
 					}),
-					React.createElement('span', { className: 'chrono-preset-desc' }, glassBlurVal + 'px')),
+					React.createElement('span', { className: 'chrono-preset-desc' }, String(glassBlurVal))),
 				React.createElement('div', { className: 'chrono-wall-row' },
 					React.createElement('input', {
 						className: 'chrono-wall-input', type: 'text', placeholder: '本机壁纸绝对路径（工作区内）', value: wallPath,
@@ -311,12 +311,17 @@ window.__ModuleLoader__.load({
 				map['--chrono-contrast'] = { light: String(settings.contrast), dark: String(settings.contrast) };
 				const clarity = clamp(settings.opacity, 0, 1);
 				map['--chrono-clarity'] = { light: String(clarity), dark: String(clarity) };
+				// 玻璃：仅输出列背景 wash（半透明 pane），off/无需时输出 none。
+				// 绝不在结构列上生成 backdrop-filter —— 避免 compositing/stacking
+				// 干扰 better-sidebar 右侧栏 resize strip 的命中。
 				const gm = settings.glass === 'on' || settings.glass === 'off' ? settings.glass : 'auto';
 				const gb = Math.min(24, Math.max(0, Number(settings.glassBlur) || 14));
-				let gpx = 0;
-				if (gm === 'on') gpx = gb;
-				else if (gm === 'auto') gpx = clarity >= 0.9 ? gb : (clarity >= 0.7 ? Math.max(2, Math.round(gb * 0.45)) : 0);
-				map['--chrono-glass-blur'] = { light: gpx ? gpx + 'px' : '0px', dark: gpx ? gpx + 'px' : '0px' };
+				const glassOn = gm === 'on' ? gb > 0 : (gm === 'auto' ? clarity >= 0.7 && gb > 0 : false);
+				const wash = glassOn
+					? 'linear-gradient(165deg, color-mix(in srgb, var(--chrono-canvas, #E6DBC2) ' + Math.round(14 + 22 * (gb / 24)) + '%, transparent), color-mix(in srgb, var(--chrono-canvas, #E6DBC2) ' + Math.round(9 + 14 * (gb / 24)) + '%, transparent))'
+					: 'none';
+				map['--chrono-glass-wash'] = { light: wash, dark: wash };
+				map['--chrono-glass-blur'] = { light: glassOn ? gb + 'px' : '0px', dark: glassOn ? gb + 'px' : '0px' };
 				try { latestDispose = theme.overrideTokens('chrono-archive', map); } catch (e) { console.error('[chrono-archive-theme] override failed', e && e.message); }
 			}
 			const urlOf = (i) => (walls.length ? 'url("' + walls[i % walls.length].url + '")' : 'none');
@@ -432,6 +437,27 @@ window.__ModuleLoader__.load({
 					intervalDispose = timer.interval(() => { if (alive) advance(); }, secs * 1000);
 				}
 			} catch (e) { console.error('[chrono-archive-theme] bootstrap failed', e && e.message); }
+			function diagnoseSidebarResizeHit() {
+				try {
+					const panel = document.querySelector('[data-dsh-better-sidebar] [data-dsh-panel]');
+					if (!panel) { console.warn('[chrono-archive] resize handle not found (panel closed?)'); return; }
+					const all = panel.querySelectorAll('*');
+					let handle = null;
+					for (const el of all) { if (getComputedStyle(el).cursor === 'col-resize') { handle = el; break; } }
+					if (!handle) { console.warn('[chrono-archive] resize handle not found (no col-resize element)'); return; }
+					const rect = handle.getBoundingClientRect();
+					const x = rect.left + rect.width / 2;
+					const y = rect.top + Math.min(rect.height / 2, window.innerHeight / 2);
+					const hit = document.elementFromPoint(x, y);
+					console.log('[chrono-archive] resize hit test', {
+						handle, rect, x, y, hit,
+						hitClass: hit && hit.className,
+						hitCursor: hit ? getComputedStyle(hit).cursor : null,
+					});
+				} catch (e) { console.warn('[chrono-archive] resize hit test failed', e && e.message); }
+			}
+			window.__chronoDiagnoseSidebarResizeHit = diagnoseSidebarResizeHit;
+			try { setTimeout(() => { try { diagnoseSidebarResizeHit(); } catch (_) {} }, 2500); } catch (_) {}
 			function advance() {
 				if (walls.length < 2) return;
 				const next = (index + 1) % walls.length;

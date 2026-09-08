@@ -56,11 +56,15 @@ body::after {
   filter: blur(var(--chrono-blur, 3px)) saturate(var(--chrono-sat, 1)) contrast(var(--chrono-contrast, 1.02));
 }
 
-/* 全清晰壁纸时的“玻璃窗”：让正文区域背景模糊化保证文字可读
-   （clarity=1 → --chrono-glass-blur≈14px；平时 0 无开销） */
+/* 玻璃窗（视觉层与结构层分离，兼容 better-sidebar resize 命中）
+   —— 不再把 backdrop-filter / filter / transform 加到结构性
+   .pI_x6G_centerCol 上（那会建立 compositing/stacking 层并影响
+   center column ↔ 右侧栏 交界处的命中测试）。
+   玻璃感改由列自身 background 的半透明 wash 模拟：
+   background 不参与命中测试、不改变布局与堆叠；
+   off / 无需玻璃时 client 写入 none，即真正 backdrop-free。 */
 .pI_x6G_centerCol {
-  -webkit-backdrop-filter: blur(var(--chrono-glass-blur, 0px)) saturate(0.92);
-  backdrop-filter: blur(var(--chrono-glass-blur, 0px)) saturate(0.92);
+  background: var(--chrono-glass-wash, none);
 }
 
 /* ---------- 3. 档案字体编排 ----------
